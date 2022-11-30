@@ -15,11 +15,6 @@ const redisClientModel = {
     return await redisClient.del(key)
   },
   scanAllKeys: async (key, scanConfig) => {
-    //const scanConfig = {
-    //  TYPE: "string",
-    //  MATCH: `${key}*`,
-    //  COUNT: 100,
-    //}
     let keys = []
     for await (const key of redisClient.scanIterator(scanConfig)) {
       keys.push(key)
