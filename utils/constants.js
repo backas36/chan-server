@@ -12,6 +12,15 @@ const constants = {
     basic: "basic",
     user: "user",
   },
+  IDENTITY_TYPE: {
+    chanchan: "chanchan-api",
+    google: "google",
+  },
+  JWT_TYPE: {
+    accessToken: "accessToken",
+    refreshToken: "refreshToken",
+    createAccount: "createAccount",
+  },
 }
 
 module.exports = constants

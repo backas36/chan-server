@@ -10,6 +10,7 @@ const morganHandler = require("./middleware/morganHandler")
 const errorHandler = require("./middleware/errorHandler")
 const corsOptions = require("./config/corsOptions")
 const logger = require("./utils/logger")
+const authRouter = require("./routes/auth")
 
 app.use(morganHandler)
 app.use(cors(corsOptions))
@@ -34,6 +35,8 @@ app.get("/api/status", (req, res) => {
     message: "The API is up and running!",
   })
 })
+
+app.use("/auth", authRouter)
 
 app.use((req, res, next) => {
   res.status(404)
