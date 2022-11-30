@@ -19,7 +19,8 @@ const constants = {
   JWT_TYPE: {
     accessToken: "accessToken",
     refreshToken: "refreshToken",
-    createAccount: "createAccount",
+    newAccount: "newAccount",
+    resetPwd: "resetPwd",
   },
   ACTION_TYPE: {
     register: "register",
@@ -28,6 +29,8 @@ const constants = {
     updateProfile: "update profile",
     updateAccount: "update account",
     deleteAccount: "delete account",
+    activeAccount: "active account",
+    resetPassword: "reset password",
   },
 }
 

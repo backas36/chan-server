@@ -12,6 +12,7 @@ const bcryptHelper = require("../utils/bcryptHelper")
 const { generateJwtTokens } = require("../utils/jwtHelper")
 const redisCacheService = require("./redisCache")
 const actionLogModel = require("../models/actionLog")
+const userAuthModel = require("../models/userAuth")
 
 const authService = {
   login: async (loginDTO) => {

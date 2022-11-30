@@ -2,6 +2,7 @@ const createError = require("http-errors")
 
 const userService = require("../services/user")
 const { isGuidValid } = require("../utils")
+const { verifyNewAccToken, verifyResetPwdToken } = require("../utils/jwtHelper")
 //const smtpMailService = require("../services/smtpMail")
 //const { generateNewAccToken } = require("../utils/jwtHelper")
 //const redisCacheService = require("../services/redisCache")
@@ -70,6 +71,90 @@ const userController = {
         req.user.currentUserName
       )
       res.status(200).json({ success: true, message: "Profile Updated" })
+    } catch (err) {
+      next(err)
+    }
+  },
+  activeAccount: async (req, res, next) => {
+    const { token, password } = req.body
+    if (!token || !password) {
+      const error = createError(400)
+      return next(error)
+    }
+    try {
+      const decodedToken = verifyNewAccToken(token)
+      const id = await userService.activeNewUser(decodedToken, password)
+      res
+        .status(201)
+        .json({ success: true, message: "User account activated ", userId: id })
+    } catch (err) {
+      next(err)
+    }
+  },
+  createUser: async (req, res, next) => {
+    const { role, name, email } = req.body
+    if (!role || !name || !email) {
+      const error = createError(400, "Please enter fields completely.")
+      return next(error)
+    }
+    try {
+      await userService.createUser(
+        req.body,
+        req.user.currentUserName,
+        req.user.userId
+      )
+      //const token = generateNewAccToken({ name, email, birthDate, userId: id })
+      //await redisCacheService.saveNewAccountToken(id, token)
+      //await smtpMailService.sendNewAccount(email, token)
+      res.status(201).json({ success: true, message: "User created" })
+    } catch (err) {
+      next(err)
+    }
+  },
+  register: async (req, res, next) => {
+    const { name, email, password } = req.body
+    if (!name || !email || !password) {
+      const error = createError(400, "Please enter fields completely.")
+      return next(error)
+    }
+    try {
+      const id = await userService.register(req.body)
+      res
+        .status(201)
+        .json({ success: true, message: "User created", userId: id })
+    } catch (err) {
+      next(err)
+    }
+  },
+  resetPassword: async (req, res, next) => {
+    const { email } = req.body
+    if (!email) {
+      const error = createError(400, "Please provide email.")
+      return next(error)
+    }
+    try {
+      await userService.resetPassword(email)
+
+      res
+        .status(200)
+        .json({ success: true, message: "Send reset password to user's mail" })
+    } catch (err) {
+      next(err)
+    }
+  },
+  activeResetPassword: async (req, res, next) => {
+    const { token, password } = req.body
+    if (!token || !password) {
+      const error = createError(400)
+      return next(error)
+    }
+    try {
+      const decodedToken = verifyResetPwdToken(token)
+      await userService.activeResetPassword(decodedToken, password)
+      res.status(201).json({
+        success: true,
+        message: "User reset password",
+      })
     } catch (err) {
       next(err)
     }

@@ -15,8 +15,49 @@ const newAccountConfig = {
   expiresIn: process.env.JWT_NEW_ACCOUNT_TIME,
   issuer: process.env.JWT_ISSURE,
 }
-
+const resetPwdConfig = {
+  expiresIn: process.env.JWT_RESET_PWD_TIME,
+  issuer: process.env.JWT_ISSURE,
+}
 const jwtHelper = {
+  verifyResetPwdToken: (token) => {
+    const decodedToken = jwt.verify(
+      token,
+      process.env.JWT_RESET_PWD_SECRET,
+      null,
+      null
+    )
+    return decodedToken
+  },
+  generateResetPwdToken: (payload) => {
+    const resetPwdTokenId = uuidv4()
+    const resetPwdToken = jwt.sign(
+      { ...payload, type: JWT_TYPE.resetPwd, resetPwdTokenId },
+      process.env.JWT_RESET_PWD_SECRET,
+      resetPwdConfig,
+      null
+    )
+    return { resetPwdTokenId, resetPwdToken }
+  },
+  verifyNewAccToken: (token) => {
+    const decodedToken = jwt.verify(
+      token,
+      process.env.JWT_NEW_ACCOUNT_SECRET,
+      null,
+      null
+    )
+    return decodedToken
+  },
+  generateNewAccToken: (payload) => {
+    const newAccTokenId = uuidv4()
+    const newAccToken = jwt.sign(
+      { ...payload, type: JWT_TYPE.newAccount, newAccTokenId },
+      process.env.JWT_NEW_ACCOUNT_SECRET,
+      newAccountConfig,
+      null
+    )
+    return { newAccTokenId, newAccToken }
+  },
   verifyAccessToken: (accessToken) => {
     const decodedAccessToken = jwt.verify(
       accessToken,

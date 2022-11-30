@@ -20,6 +20,8 @@ const meRouter = require("./routes/me")
 const actionLogRouter = require("./routes/actionLog")
 const userRouter = require("./routes/user")
 
+const userController = require("./controllers/user")
+
 app.use(morganHandler)
 app.use(cors(corsOptions))
 app.use((req, res, next) => {
@@ -44,6 +46,10 @@ app.get("/api/status", (req, res) => {
   })
 })
 
+app.post("/register", userController.register)
+app.post("/active-account", userController.activeAccount)
+app.post("/reset-password", userController.resetPassword)
+app.post("/active-reset-password", userController.activeResetPassword)
 app.use("/auth", authRouter)
 app.use("/me", authHandler, userStatusHandler, meRouter)
 app.use(

@@ -1,18 +1,19 @@
+require("dotenv").config()
 const createError = require("http-errors")
-const bcrypt = require("bcrypt")
 const isEmpty = require("lodash/isEmpty")
 const omit = require("lodash/omit")
 
 const userModel = require("../models/user")
 const userAuthModel = require("../models/userAuth")
-const {
-  IDENTITY_TYPE,
-  USER_GROUP_CODE,
-  ACTION_TYPE,
-} = require("../utils/constants")
+const { IDENTITY_TYPE, ACTION_TYPE, USER_ROLES } = require("../utils/constants")
 const actionLogModel = require("../models/actionLog")
-
-const saltRound = 10
+const {
+  generateNewAccToken,
+  generateResetPwdToken,
+} = require("../utils/jwtHelper")
+const redisCacheModel = require("../models/redisCache")
+const mailService = require("../services/mailService")
+const bcryptHelper = require("../utils/bcryptHelper")
 
 const skipReqUserKeys = [
   "email",
@@ -23,115 +24,139 @@ const skipReqUserKeys = [
 ]
 
 const userService = {
-  //register: async (userDTO) => {
-  //  const { email, password } = userDTO
-  //  let groupCode = userDTO?.groupCode
+  register: async (userDTO) => {
+    const { email, password } = userDTO
+    try {
+      const user = await userModel.findUserByEmail(email)
+      if (!isEmpty(user)) {
+        const err = createError(409, "User with email is already exists.")
+        throw err
+      }
 
-  //  // default user
-  //  if (!groupCode) {
-  //    groupCode = USER_GROUP_CODE.user
-  //  }
+      const registerData = omit(
+        { ...userDTO, role: userDTO?.role || USER_ROLES.user },
+        ["password"]
+      )
 
-  //  try {
-  //    const [userGroup] = await userGroupModel.findUserGroupByCode(groupCode)
-  //    if (isEmpty(userGroup)) {
-  //      const err = createError(
-  //        400,
-  //        `UserGroup with  ${groupCode} does not exist.!`
-  //      )
-  //      throw err
-  //    }
-  //    const user = await userModel.findUserByEmail(email)
-  //    if (!isEmpty(user)) {
-  //      const err = createError(409, "User with email is already exists.")
-  //      throw err
-  //    }
+      const hashPassword = bcryptHelper.hashData(password)
 
-  //    const registerData = omit({ ...userDTO, userGroupId: userGroup.id }, [
-  //      "groupCode",
-  //      "password",
-  //    ])
+      const { id } = await userModel.createUser(registerData)
 
-  //    const hashPassword = bcrypt.hashSync(password, saltRound)
+      await userAuthModel.createUserAuth({
+        userId: id,
+        identityType: IDENTITY_TYPE.chanchan,
+        identifier: email,
+        credential: hashPassword,
+      })
 
-  //    const { id } = await userModel.createUser(registerData)
+      const actionLogData = {
+        relatedUserId: id,
+        actionType: ACTION_TYPE.createUser,
+        actionSubject: "User Register",
+        actionContent: JSON.stringify({
+          ...registerData,
+          identityType: IDENTITY_TYPE.chanchan,
+        }),
+      }
 
-  //    await userAuthModel.createUserAuth({
-  //      userId: id,
-  //      identityType: IDENTITY_TYPE.chanchan,
-  //      identifier: email,
-  //      credential: hashPassword,
-  //    })
+      await actionLogModel.createActionLog(actionLogData)
 
-  //    const actionLogData = {
-  //      relatedUserId: id,
-  //      actionType: ACTION_TYPE.createUser,
-  //      actionSubject: "User Register",
-  //      actionContent: JSON.stringify({
-  //        ...registerData,
-  //        identityType: IDENTITY_TYPE.chanchan,
-  //      }),
-  //    }
+      return id
+    } catch (err) {
+      return Promise.reject(err)
+    }
+  },
+  activeResetPassword: async (userDTO, password) => {
+    const { email, resetPwdTokenId } = userDTO
+    try {
+      const cachedResetPwdToken = await redisCacheModel.getRedisByKey(
+        resetPwdTokenId
+      )
+      if (!cachedResetPwdToken) {
+        const err = createError(500, "Token already used")
+        throw err
+      }
+      const hashPassword = bcryptHelper.hashData(password)
+      const [user] = await userModel.findUserByEmail(email)
+      if (isEmpty(user)) {
+        const err = createError(400, `User does not exist.!`)
+        throw err
+      }
+      await userAuthModel.updateUserAuthByUserId(user.id, {
+        credential: hashPassword,
+      })
+      await actionLogModel.createActionLog({
+        relatedUserId: user.id,
+        actionType: ACTION_TYPE.resetPassword,
+        actionSubject: "User reset password",
+      })
+      await redisCacheModel.delRedisByKey(resetPwdTokenId)
+    } catch (err) {
+      return Promise.reject(err)
+    }
+  },
+  activeNewUser: async (userDTO, password) => {
+    const { name, email, role, newAccTokenId } = userDTO
+    try {
+      const cachedAccToken = await redisCacheModel.getRedisByKey(newAccTokenId)
+      if (!cachedAccToken) {
+        const err = createError(500, "Account already active")
+        throw err
+      }
 
-  //    await actionLogModel.createActionLog(actionLogData)
-
-  //    return id
-  //  } catch (err) {
-  //    return Promise.reject(err)
-  //  }
-  //},
-  //createUser: async (userDTO, currentUserName) => {
-  //  // create user if by admin, default pwd is birthDate
-  //  const { email, birthDate, groupCode } = userDTO
-  //  try {
-  //    let userGroup
-
-  //    ;[userGroup] = await userGroupModel.findUserGroupByCode(groupCode)
-  //    if (isEmpty(userGroup)) {
-  //      const err = createError(
-  //        400,
-  //        `UserGroup with  ${groupCode} does not exist.!`
-  //      )
-  //      throw err
-  //    }
-
-  //    const user = await userModel.findUserByEmail(email)
-  //    if (!isEmpty(user)) {
-  //      const err = createError(409, "User with email is already exists.")
-  //      throw err
-  //    }
-
-  //    const subStringBirth = birthDate?.replace("-", "")
-  //    const newUserData = omit(
-  //      { ...user, ...userDTO, userGroupId: userGroup.id },
-  //      ["groupCode", "groupName", "password", "lastLoginAt"]
-  //    )
-
-  //    const hashPassword = bcrypt.hashSync(subStringBirth, saltRound)
-  //    const { id } = await userModel.createUser(newUserData)
-
-  //    await userAuthModel.createUserAuth({
-  //      userId: id,
-  //      identityType: IDENTITY_TYPE.chanchan,
-  //      identifier: email,
-  //      credential: hashPassword,
-  //    })
-  //    const actionLogData = {
-  //      relatedUserId: id,
-  //      actionType: ACTION_TYPE.createUser,
-  //      actionSubject: `Create User by ${currentUserName}`,
-  //      actionContent: JSON.stringify({
-  //        ...newUserData,
-  //        identityType: IDENTITY_TYPE.chanchan,
-  //      }),
-  //    }
-  //    await actionLogModel.createActionLog(actionLogData)
-
-  //    return id
-  //  } catch (err) {
-  //    return Promise.reject(err)
-  //  }
-  //},
+      const hashPassword = bcryptHelper.hashData(password)
+      const { id } = await userModel.createUser({ name, email, role })
+      await userAuthModel.createUserAuth({
+        userId: id,
+        identityType: IDENTITY_TYPE.chanchan,
+        identifier: email,
+        credential: hashPassword,
+      })
+      const actionLogData = {
+        relatedUserId: id,
+        actionType: ACTION_TYPE.activeAccount,
+        actionSubject: `Active Account`,
+        actionContent: JSON.stringify({
+          ...userDTO,
+          identityType: IDENTITY_TYPE.chanchan,
+        }),
+      }
+      await actionLogModel.createActionLog(actionLogData)
+      await redisCacheModel.delRedisByKey(newAccTokenId)
+      return id
+    } catch (err) {
+      return Promise.reject(err)
+    }
+  },
+  createUser: async (userDTO, currentUserName, currentUserId) => {
+    const { email } = userDTO
+    try {
+      const user = await userModel.findUserByEmail(email)
+      if (!isEmpty(user)) {
+        const err = createError(409, "User with email is already exists.")
+        throw err
+      }
+      const { newAccTokenId, newAccToken } = generateNewAccToken(userDTO)
+      await redisCacheModel.storeRedis({
+        key: newAccTokenId,
+        value: newAccToken,
+        timeType: "EX",
+        time: process.env.JWT_NEW_ACCOUNT_TIME,
+      })
+      const actionLogData = {
+        relatedUserId: currentUserId,
+        actionType: ACTION_TYPE.createUser,
+        actionSubject: `Create User by ${currentUserName}`,
+        actionContent: JSON.stringify({
+          ...userDTO,
+        }),
+      }
+      await actionLogModel.createActionLog(actionLogData)
+      await mailService.sendNewAccount(email, newAccToken)
+    } catch (err) {
+      return Promise.reject(err)
+    }
+  },
   getUserById: async (id, identityType) => {
     try {
       const findUser = await userModel.findUserById(id, identityType)
@@ -180,7 +205,7 @@ const userService = {
         throw err
       }
       const { originalPassword, newPassword } = data
-      const compareOldPassword = bcrypt.compareSync(
+      const compareOldPassword = bcryptHelper.compare(
         originalPassword,
         userAuth[0].credential
       )
@@ -189,7 +214,7 @@ const userService = {
         const error = createError(401, "Password incorrect")
         throw error
       }
-      const hashNewPassword = bcrypt.hashSync(newPassword, saltRound)
+      const hashNewPassword = bcryptHelper.hashData(newPassword)
       await userAuthModel.updateUserAuthByUserId(userId, {
         credential: hashNewPassword,
       })
@@ -253,6 +278,33 @@ const userService = {
         actionContent: null,
       }
       await actionLogModel.createActionLog(actionLogData)
+      return
+    } catch (err) {
+      return Promise.reject(err)
+    }
+  },
+  resetPassword: async (email) => {
+    try {
+      const [user] = await userModel.findUserByEmail(email)
+      if (isEmpty(user)) {
+        const err = createError(400, "User with email is not exists.")
+        throw err
+      }
+      if (user.identityType !== IDENTITY_TYPE.chanchan) {
+        const error = createError(400, "You are not using ChanChan account.")
+        return next(error)
+      }
+
+      const { resetPwdTokenId, resetPwdToken } = generateResetPwdToken({
+        email,
+      })
+      await redisCacheModel.storeRedis({
+        key: resetPwdTokenId,
+        value: resetPwdToken,
+        timeType: "EX",
+        time: process.env.JWT_RESET_PWD_TIME,
+      })
+      await mailService.sendResetPwd(email, resetPwdToken)
       return
     } catch (err) {
       return Promise.reject(err)
