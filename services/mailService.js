@@ -11,6 +11,7 @@ const transporter = nodemailer.createTransport({
   },
 })
 
+//TODO update email template
 const smtpMailService = {
   sendNewAccount: async (email, token) => {
     try {
