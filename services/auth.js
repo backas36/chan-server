@@ -2,10 +2,16 @@ const isEmpty = require("lodash/isEmpty")
 const createError = require("http-errors")
 
 const userModel = require("../models/user")
-const { USER_STATUS, IDENTITY_TYPE, USER_ROLES } = require("../utils/constants")
+const {
+  USER_STATUS,
+  IDENTITY_TYPE,
+  USER_ROLES,
+  ACTION_TYPE,
+} = require("../utils/constants")
 const bcryptHelper = require("../utils/bcryptHelper")
 const { generateJwtTokens } = require("../utils/jwtHelper")
 const redisCacheService = require("./redisCache")
+const actionLogModel = require("../models/actionLog")
 
 const authService = {
   login: async (loginDTO) => {
@@ -142,6 +148,14 @@ const authService = {
           identityType: reqVerifyType,
           statusCode: USER_STATUS.active,
         }
+        await actionLogModel.createActionLog({
+          relatedUserId: id,
+          actionType: ACTION_TYPE.createUser,
+          actionSubject: "Register By Google",
+          actionContent: JSON.stringify({
+            ...authUser,
+          }),
+        })
       } else {
         const user = findUser
         if (user.status !== USER_STATUS.active) {

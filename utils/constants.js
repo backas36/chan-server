@@ -21,6 +21,14 @@ const constants = {
     refreshToken: "refreshToken",
     createAccount: "createAccount",
   },
+  ACTION_TYPE: {
+    register: "register",
+    createUser: "create user",
+    updatePwd: "change password",
+    updateProfile: "update profile",
+    updateAccount: "update account",
+    deleteAccount: "delete account",
+  },
 }
 
 module.exports = constants

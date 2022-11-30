@@ -8,9 +8,12 @@ const PORT = process.env.PORT || 8080
 
 const morganHandler = require("./middleware/morganHandler")
 const errorHandler = require("./middleware/errorHandler")
+const userStatusHandler = require("./middleware/userStatusHandler")
 const corsOptions = require("./config/corsOptions")
 const logger = require("./utils/logger")
 const authRouter = require("./routes/auth")
+const meRouter = require("./routes/me")
+const authHandler = require("./middleware/authHandler")
 
 app.use(morganHandler)
 app.use(cors(corsOptions))
@@ -37,6 +40,7 @@ app.get("/api/status", (req, res) => {
 })
 
 app.use("/auth", authRouter)
+app.use("/me", authHandler, userStatusHandler, meRouter)
 
 app.use((req, res, next) => {
   res.status(404)
