@@ -5,19 +5,19 @@ const { v4: uuidv4 } = require("uuid")
 const { JWT_TYPE } = require("./constants")
 const accessTokenConfig = {
   expiresIn: process.env.JWT_ACCESS_TIME,
-  issuer: process.env.JWT_ISSURE,
+  issuer: process.env.JWT_ISSUER,
 }
 const refreshTokenConfig = {
   expiresIn: process.env.JWT_REFRESH_TIME,
-  issuer: process.env.JWT_ISSURE,
+  issuer: process.env.JWT_ISSUER,
 }
 const newAccountConfig = {
   expiresIn: process.env.JWT_NEW_ACCOUNT_TIME,
-  issuer: process.env.JWT_ISSURE,
+  issuer: process.env.JWT_ISSUER,
 }
 const resetPwdConfig = {
   expiresIn: process.env.JWT_RESET_PWD_TIME,
-  issuer: process.env.JWT_ISSURE,
+  issuer: process.env.JWT_ISSUER,
 }
 const jwtHelper = {
   verifyResetPwdToken: (token) => {
