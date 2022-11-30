@@ -18,6 +18,7 @@ const logger = require("./utils/logger")
 const authRouter = require("./routes/auth")
 const meRouter = require("./routes/me")
 const actionLogRouter = require("./routes/actionLog")
+const userRouter = require("./routes/user")
 
 app.use(morganHandler)
 app.use(cors(corsOptions))
@@ -51,6 +52,13 @@ app.use(
   userStatusHandler,
   dashboardAuthHandler,
   actionLogRouter
+)
+app.use(
+  "/user",
+  authHandler,
+  userStatusHandler,
+  dashboardAuthHandler,
+  userRouter
 )
 
 app.use((req, res, next) => {

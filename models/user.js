@@ -16,6 +16,7 @@ const userModel = {
         "user_auth.credential as credential"
       )
       .where("user.email", email)
+      .andWhere("user.is_deleted", false)
       .andWhere((builder) => {
         if (identityType) {
           builder.where("user_auth.identityType", identityType)
@@ -41,6 +42,7 @@ const userModel = {
         "user_auth.credential as credential"
       )
       .where("user.id", userId)
+      .andWhere("user.is_deleted", false)
       .andWhere((builder) => {
         if (identityType) {
           builder.where("user_auth.identityType", identityType)

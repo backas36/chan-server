@@ -203,76 +203,61 @@ const userService = {
       return Promise.reject(err)
     }
   },
-  //listUsers: async (requestParams) => {
-  //  try {
-  //    const users = await userModel.findAllUsers(requestParams)
-  //    return users
-  //  } catch (err) {
-  //    return Promise.reject(err)
-  //  }
-  //},
-  //updateUserById: async (userDTO, currentUserName) => {
-  //  const { userId, data } = userDTO
-  //  const { groupCode } = data
-  //  try {
-  //    let userGroup = []
-  //    if (groupCode) {
-  //      ;[userGroup] = await userGroupModel.findUserGroupByCode(groupCode)
-  //    }
-  //    if (isEmpty(userGroup)) {
-  //      const err = createError(
-  //        400,
-  //        `UserGroup with  ${groupCode} does not exist.!`
-  //      )
-  //      throw err
-  //    }
-  //    const [user] = await userModel.findUserById(userId)
+  listUsers: async (requestParams) => {
+    try {
+      const users = await userModel.findAllUsers(requestParams)
+      return users
+    } catch (err) {
+      return Promise.reject(err)
+    }
+  },
+  updateUserById: async (userDTO, currentUserName) => {
+    const { userId, data } = userDTO
+    try {
+      const [user] = await userModel.findUserById(userId)
 
-  //    if (isEmpty(user)) {
-  //      const err = createError(400, `User with id ${userId} does not exist.!`)
-  //      throw err
-  //    }
+      if (isEmpty(user)) {
+        const err = createError(400, `User with id ${userId} does not exist.!`)
+        throw err
+      }
 
-  //    const updatedData = omit(
-  //      { ...user, ...data, userGroupId: userGroup.id },
-  //      skipReqUserKeys
-  //    )
-  //    await userModel.updateUserById(userId, updatedData)
-  //    const actionLogData = {
-  //      relatedUserId: userId,
-  //      actionType: ACTION_TYPE.updateAccount,
-  //      actionSubject: `Update User by ${currentUserName}`,
-  //      actionContent: JSON.stringify(updatedData),
-  //    }
-  //    await actionLogModel.createActionLog(actionLogData)
-  //    return
-  //  } catch (err) {
-  //    return Promise.reject(err)
-  //  }
-  //},
-  //deleteUserById: async (userId, currentUserName) => {
-  //  try {
-  //    const user = await userModel.findUserById(userId)
-  //    if (user.length === 0) {
-  //      const err = createError(400, `User with id ${userId} does not exist.!`)
-  //      throw err
-  //    }
-  //    await userAuthModel.updateUserAuthByUserId(userId, {
-  //      isDeleted: true,
-  //    })
-  //    await userModel.updateUserById(userId, { isDeleted: true })
-  //    const actionLogData = {
-  //      relatedUserId: userId,
-  //      actionType: ACTION_TYPE.deleteAccount,
-  //      actionSubject: `Update User by ${currentUserName}`,
-  //      actionContent: null,
-  //    }
-  //    await actionLogModel.createActionLog(actionLogData)
-  //    return
-  //  } catch (err) {
-  //    return Promise.reject(err)
-  //  }
-  //},
+      const updatedData = omit({ ...user, ...data }, skipReqUserKeys)
+      await userModel.updateUserById(userId, updatedData)
+      const actionLogData = {
+        relatedUserId: userId,
+        actionType: ACTION_TYPE.updateAccount,
+        actionSubject: `Update User by ${currentUserName}`,
+        actionContent: JSON.stringify(updatedData),
+      }
+      await actionLogModel.createActionLog(actionLogData)
+      return
+    } catch (err) {
+      return Promise.reject(err)
+    }
+  },
+  deleteUserById: async (userId, currentUserName) => {
+    try {
+      const user = await userModel.findUserById(userId)
+      if (user.length === 0) {
+        const err = createError(400, `User with id ${userId} does not exist.!`)
+        throw err
+      }
+      await userAuthModel.updateUserAuthByUserId(userId, {
+        isDeleted: true,
+      })
+      await userModel.updateUserById(userId, { isDeleted: true })
+      const actionLogData = {
+        relatedUserId: userId,
+        actionType: ACTION_TYPE.deleteAccount,
+        actionSubject: `Delete User by ${currentUserName}`,
+        actionContent: null,
+      }
+      await actionLogModel.createActionLog(actionLogData)
+      return
+    } catch (err) {
+      return Promise.reject(err)
+    }
+  },
 }
 
 module.exports = userService
