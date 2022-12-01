@@ -1,4 +1,7 @@
-require("dotenv").config()
+const path = require("path")
+require("dotenv").config({
+  path: path.resolve(__dirname, `${process.env.NODE_ENV}.env`),
+})
 const _ = require("lodash")
 
 const camelToSnakeCase = (str) => {
@@ -37,6 +40,33 @@ module.exports = {
     postProcessResponse: (result, queryContext) => {
       // TODO: add special case for raw results
       // (depends on dialect)
+      if (Array.isArray(result)) {
+        return result.map((row) =>
+          _.mapKeys(row, (value, key) => _.camelCase(key))
+        )
+      } else {
+        return _.mapKeys(result, (value, key) => _.camelCase(key))
+      }
+    },
+  },
+  staging: {
+    client: "postgresql",
+    connection: process.env.POSTGRES_URL,
+    pool: {
+      min: 2,
+      max: 10,
+    },
+    migrations: {
+      directory: __dirname + "/config/migrations",
+      tableName: "knex_migrations",
+    },
+    seeds: {
+      directory: __dirname + "/config/seeds/" + process.env.NODE_ENV,
+    },
+    wrapIdentifier: (value, origImpl, queryContext) => {
+      return origImpl(camelToSnakeCase(value))
+    },
+    postProcessResponse: (result, queryContext) => {
       if (Array.isArray(result)) {
         return result.map((row) =>
           _.mapKeys(row, (value, key) => _.camelCase(key))
