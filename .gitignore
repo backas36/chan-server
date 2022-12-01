@@ -1,8 +1,6 @@
 package-lock.json
 node_modules
 logs
-config/allowedOrigins.js
-config/corsOptions.js
 .env
 *.env
 .idea
