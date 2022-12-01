@@ -4,9 +4,9 @@
   "description": "Chan Chan api server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js",
-    "start": "node index.js",
+    "dev": "export NODE_ENV=development && nodemon index.js",
+    "staging": "export NODE_ENV=staging && nodemon index.js",
+    "prod": "export NODE_ENV=production && node index.js",
     "migrate": "npx knex migrate:latest --knexfile knexfile.js",
     "un-migrate": "npx knex migrate:rollback --knexfile knexfile.js",
     "seed": "npx knex seed:run"
