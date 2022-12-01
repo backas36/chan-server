@@ -1,0 +1,17 @@
+services:
+  - type: web
+    env: node
+    name: chan-staging-backend-1
+    repo: https://github.com/backas36/chan-server.git
+    branch: staging
+    plan: free
+    healthCheckPath: /healthz
+
+  - type: redis
+    name: chan-staging-redis-1
+    plan: free
+    ipAllowList: # required - allow external connections from everywhere
+      - source: 0.0.0.0/0
+        description: everywhere
+databases:
+  - name: chan-staging-db-1
