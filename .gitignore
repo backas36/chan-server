@@ -4,6 +4,6 @@ logs
 config/allowedOrigins.js
 config/corsOptions.js
 .env
-
+*.env
 .idea
 .vscode/
