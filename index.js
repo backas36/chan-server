@@ -11,6 +11,7 @@ const errorHandler = require("./middleware/errorHandler")
 const userStatusHandler = require("./middleware/userStatusHandler")
 const dashboardAuthHandler = require("./middleware/dashboardAuthHandler")
 const authHandler = require("./middleware/authHandler")
+const globalLimiter = require("./middleware/globalLimiter")
 
 const corsOptions = require("./config/corsOptions")
 const logger = require("./utils/logger")
@@ -38,6 +39,8 @@ app.use(express.json({ limit: "10mb" }))
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 
+app.use(globalLimiter)
+
 app.get("/api/status", (req, res) => {
   logger.info("Checking the API status: Everything is OK")
   res.status(200).json({
@@ -50,6 +53,7 @@ app.post("/register", userController.register)
 app.post("/active-account", userController.activeAccount)
 app.post("/reset-password", userController.resetPassword)
 app.post("/active-reset-password", userController.activeResetPassword)
+
 app.use("/auth", authRouter)
 app.use("/me", authHandler, userStatusHandler, meRouter)
 app.use(
