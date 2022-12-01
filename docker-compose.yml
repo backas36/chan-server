@@ -20,7 +20,7 @@ services:
   postgres:
     container_name: postgres
     #build: ./config/
-    image: postgres
+    image: postgres:15
     env_file:
       - ./.env
     ports:
