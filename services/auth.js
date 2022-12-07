@@ -85,7 +85,7 @@ const authService = {
         `${userId}_${jti}`
       )
       if (!cachedRefreshToken) {
-        await redisCacheService.delAllRtByUserId(userId)
+        // await redisCacheService.delAllRtByUserId(userId)
         const error = createError(403)
         throw error
       }

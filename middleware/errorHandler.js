@@ -14,7 +14,7 @@ const errorHandler = (err, req, res, next) => {
 
   const status = err.statusCode ? err.statusCode : 500
   res.status(status)
-  res.json({ success: false, message: message })
+  res.json({ success: false, message: message, isError:true })
 }
 
 module.exports = errorHandler

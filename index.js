@@ -3,7 +3,6 @@ require("dotenv").config({
   path: path.resolve(__dirname, `${process.env.NODE_ENV}.env`),
 })
 const express = require("express")
-const cookieParser = require("cookie-parser")
 const app = express()
 const cors = require("cors")
 
@@ -40,7 +39,6 @@ app.use((req, res, next) => {
 
 app.use(express.json({ limit: "10mb" }))
 app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
 
 app.use(globalLimiter)
 
