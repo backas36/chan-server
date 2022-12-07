@@ -25,6 +25,9 @@ module.exports = async (req, res, next) => {
     req.user = { ...decodedToken }
     next()
   } catch (err) {
-    next(createError.Unauthorized(err?.message || "Unauthorized"))
+    if(err?.name === 'TokenExpiredError'){
+      return next(createError(403, err.message))
+    }
+    next(createError(401))
   }
 }

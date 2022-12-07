@@ -26,7 +26,10 @@ module.exports = async (req, res, next) => {
     next()
     return
   } catch (err) {
-    next(createError.Unauthorized("Unauthorized / Invalid token"))
+    if(err?.name === 'TokenExpiredError'){
+      return next(createError(403, err.message))
+    }
+    next(createError(401))
   }
 }
 

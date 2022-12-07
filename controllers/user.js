@@ -3,6 +3,7 @@ const createError = require("http-errors")
 const userService = require("../services/user")
 const { isGuidValid } = require("../utils")
 const { verifyNewAccToken, verifyResetPwdToken } = require("../utils/jwtHelper")
+const {passwordValidate} = require("../utils/regexPattern");
 //const smtpMailService = require("../services/smtpMail")
 //const { generateNewAccToken } = require("../utils/jwtHelper")
 //const redisCacheService = require("../services/redisCache")
@@ -81,6 +82,11 @@ const userController = {
       const error = createError(400)
       return next(error)
     }
+    if(!passwordValidate(password)){
+      const error = createError(400, "Password must at least 8 characters, and must includes numbers and special" +
+          " characters.")
+      return next(error)
+    }
     try {
       const decodedToken = verifyNewAccToken(token)
       const id = await userService.activeNewUser(decodedToken, password)
@@ -93,7 +99,7 @@ const userController = {
   },
   createUser: async (req, res, next) => {
     const { role, name, email } = req.body
-    if (!role || !name || !email) {
+    if (![role,name,email].every(Boolean)) {
       const error = createError(400, "Please enter fields completely.")
       return next(error)
     }
@@ -113,8 +119,13 @@ const userController = {
   },
   register: async (req, res, next) => {
     const { name, email, password } = req.body
-    if (!name || !email || !password) {
+    if (![name, email, password].every(Boolean)) {
       const error = createError(400, "Please enter fields completely.")
+      return next(error)
+    }
+    if(!passwordValidate(password)){
+      const error = createError(400, "Password must at least 8 characters, and must includes numbers and special" +
+          " characters.")
       return next(error)
     }
     try {
@@ -146,6 +157,11 @@ const userController = {
     const { token, password } = req.body
     if (!token || !password) {
       const error = createError(400)
+      return next(error)
+    }
+    if(!passwordValidate(password)){
+      const error = createError(400, "Password must at least 8 characters, and must includes numbers and special" +
+          " characters.")
       return next(error)
     }
     try {
