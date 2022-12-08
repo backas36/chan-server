@@ -9,7 +9,8 @@ const redisClientModel = {
     return await redisClient.set(key, value, valueConfig)
   },
   getRedisByKey: async (key) => {
-    return await redisClient.get(key)
+    const cacheData = await redisClient.get(key)
+    return cacheData
   },
   delRedisByKey: async (key) => {
     return await redisClient.del(key)

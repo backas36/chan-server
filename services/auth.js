@@ -54,7 +54,7 @@ const authService = {
           refreshTokenKey,
         refreshToken
       )
-      return { accessToken, refreshTokenKey }
+      return { accessToken, refreshToken }
     } catch (err) {
       return Promise.reject(err)
     }
