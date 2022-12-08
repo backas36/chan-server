@@ -5,7 +5,7 @@ module.exports = async (req, res, next) => {
   try {
     const { status } = req.user
     if (USER_STATUS.active !== status) {
-      next(createError(403))
+      next(createError(404))
       return
     }
     next()

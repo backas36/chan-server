@@ -64,6 +64,21 @@ const actionLogModel = {
       data,
     }
   },
+  findActionById:async (id) =>{
+    const row = await db("actionLog")
+        .join("user", "action_log.relatedUserId", "=", "user.id")
+        .select(
+            "action_log.id",
+            "user.name as relatedUserName",
+            "action_log.actionType as Type",
+            "action_log.actionSubject as subject",
+            "action_log.actionContent as content",
+            "action_log.createdAt as createdAt"
+        )
+        .where("action_log.id", id)
+        .andWhere("action_log.is_deleted", false)
+    return row
+  }
 }
 module.exports = actionLogModel
 /**

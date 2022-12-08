@@ -65,7 +65,7 @@ app.use(
   actionLogRouter
 )
 app.use(
-  "/user",
+  "/users",
   authHandler,
   userStatusHandler,
   dashboardAuthHandler,

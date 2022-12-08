@@ -6,7 +6,7 @@ const redisCacheService = require("../services/redisCache")
 module.exports = async (req, res, next) => {
   const { refreshToken } = req.body
   if (!refreshToken) {
-    next(createError.Unauthorized("No token provided"))
+    next(createError(401,"No token provided"))
     return
   }
   try {
@@ -18,7 +18,7 @@ module.exports = async (req, res, next) => {
       type !== JWT_TYPE.refreshToken ||
       !jti
     ) {
-      next(createError.Unauthorized("Invalid token"))
+      next(createError(401,"Invalid token"))
       return
     }
 

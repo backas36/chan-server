@@ -31,7 +31,7 @@ const authService = {
       }
       if (user[0].status !== USER_STATUS.active) {
         const err = createError(
-          403,
+          404,
           "This account has been suspended! Try to contact the admin."
         )
         throw err
@@ -49,11 +49,12 @@ const authService = {
         role: user[0].role,
         status: user[0].status,
       })
+      const refreshTokenKey = `${user[0].id}_${refreshTokenId}`
       await redisCacheService.storedRefreshToken(
-        `${user[0].id}_${refreshTokenId}`,
+          refreshTokenKey,
         refreshToken
       )
-      return { accessToken, refreshToken }
+      return { accessToken, refreshTokenKey }
     } catch (err) {
       return Promise.reject(err)
     }
@@ -70,7 +71,7 @@ const authService = {
       )
       if (!cachedRefreshToken) {
         await redisCacheService.delAllRtByUserId(id)
-        const error = createError(403)
+        const error = createError(404)
         throw error
       }
       await redisCacheService.delStoredToken(`${id}_${jti}`)
@@ -86,7 +87,7 @@ const authService = {
       )
       if (!cachedRefreshToken) {
         // await redisCacheService.delAllRtByUserId(userId)
-        const error = createError(403)
+        const error = createError(404)
         throw error
       }
       await redisCacheService.delStoredToken(`${userId}_${jti}`)
@@ -161,7 +162,7 @@ const authService = {
         const user = findUser
         if (user.status !== USER_STATUS.active) {
           const err = createError(
-            403,
+            404,
             "This account has been suspended! Try to contact the admin."
           )
           throw err

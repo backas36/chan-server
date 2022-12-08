@@ -83,7 +83,6 @@ const jwtHelper = {
     const refreshTokenId = uuidv4()
     const accessToken = jwtHelper.generateAccessToken({
       ...payload,
-      refreshTokenId,
     })
     const refreshToken = jwtHelper.generateRefreshToken({
       ...payload,
