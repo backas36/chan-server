@@ -12,7 +12,7 @@ router.post("/login", loginLimiter, authController.login)
 router.post("/logout", refreshHandler, authController.logout)
 router.post("/refresh", refreshHandler, authController.refreshToken)
 
-router.get("/verify", authHandler,userStatusHandler , authController.verify)
+router.get("/verify", authHandler , authController.verify)
 router.get(
   "/verify/google-login",
   googleAuthHandler,

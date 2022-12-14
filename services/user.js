@@ -8,7 +8,7 @@ const omit = require("lodash/omit")
 
 const userModel = require("../models/user")
 const userAuthModel = require("../models/userAuth")
-const { IDENTITY_TYPE, ACTION_TYPE, USER_ROLES } = require("../utils/constants")
+const { IDENTITY_TYPE, ACTION_TYPE, USER_ROLES,USER_STATUS } = require("../utils/constants")
 const actionLogModel = require("../models/actionLog")
 const {
   generateNewAccToken,
@@ -24,10 +24,11 @@ const skipReqUserKeys = [
   "identifier",
   "password",
   "credential",
+  "isNew"
 ]
 
 const userService = {
-  register: async (userDTO) => {
+  register: async (userDTO,) => {
     const { email, password } = userDTO
     try {
       const user = await userModel.findUserByEmail(email)
@@ -94,7 +95,39 @@ const userService = {
         actionSubject: "User reset password",
       })
       await redisCacheModel.delRedisByKey(resetPwdTokenId)
+      await userModel.updateUserById(user.id, {status:USER_STATUS.active})
+
     } catch (err) {
+      return Promise.reject(err)
+    }
+  },
+  resendActivate:async(userId,currentUserName)=>{
+    try{
+      const findUser = await userModel.findUserById(userId)
+      if (isEmpty(findUser)) {
+        const err = createError(400, `User with id ${id} does not exist.!!`)
+        throw err
+      }
+      const {id,...user} = omit(findUser[0], ["credential"])
+      const { newAccTokenId, newAccToken } = generateNewAccToken({id,user})
+      await redisCacheModel.storeRedis({
+        key: newAccTokenId,
+        value: newAccToken,
+        timeType: "EX",
+        time: process.env.JWT_NEW_ACCOUNT_TIME,
+      })
+      const actionLogData = {
+        relatedUserId: id,
+        actionType: ACTION_TYPE.resendActivate,
+        actionSubject: `Resend Activate mail by ${currentUserName}`,
+        actionContent: JSON.stringify({
+          id,
+          user,
+        }),
+      }
+      await actionLogModel.createActionLog(actionLogData)
+      await mailService.sendNewAccount(user.email, newAccToken)
+    }catch(err){
       return Promise.reject(err)
     }
   },
@@ -106,17 +139,14 @@ const userService = {
         const err = createError(500, "Account already active")
         throw err
       }
+      await userModel.updateUserById(newAccTokenId,{status:USER_STATUS.active})
 
       const hashPassword = bcryptHelper.hashData(password)
-      const { id } = await userModel.createUser({ name, email, role })
-      await userAuthModel.createUserAuth({
-        userId: id,
-        identityType: IDENTITY_TYPE.chanchan,
-        identifier: email,
+      await userAuthModel.updateUserAuthById(newAccTokenId,{
         credential: hashPassword,
       })
       const actionLogData = {
-        relatedUserId: id,
+        relatedUserId: newAccTokenId,
         actionType: ACTION_TYPE.activeAccount,
         actionSubject: `Active Account`,
         actionContent: JSON.stringify({
@@ -126,7 +156,7 @@ const userService = {
       }
       await actionLogModel.createActionLog(actionLogData)
       await redisCacheModel.delRedisByKey(newAccTokenId)
-      return id
+      return
     } catch (err) {
       return Promise.reject(err)
     }
@@ -139,7 +169,13 @@ const userService = {
         const err = createError(409, "User with email is already exists.")
         throw err
       }
-      const { newAccTokenId, newAccToken } = generateNewAccToken(userDTO)
+      const {id} = await userModel.createUser(userDTO)
+
+      const { newAccTokenId, newAccToken } = generateNewAccToken({id,...userDTO})
+      await userAuthModel.createUserAuth({
+        userId:newAccTokenId,
+        identityType: IDENTITY_TYPE.chanchan,
+        identifier: email})
       await redisCacheModel.storeRedis({
         key: newAccTokenId,
         value: newAccToken,
@@ -151,6 +187,7 @@ const userService = {
         actionType: ACTION_TYPE.createUser,
         actionSubject: `Create User by ${currentUserName}`,
         actionContent: JSON.stringify({
+          id,
           ...userDTO,
         }),
       }
@@ -295,8 +332,10 @@ const userService = {
       }
       if (user.identityType !== IDENTITY_TYPE.chanchan) {
         const error = createError(400, "You are not using ChanChan account.")
-        return next(error)
+        throw  error
       }
+
+      await userModel.updateUserById(user.id, {status:USER_STATUS.temporary})
 
       const { resetPwdTokenId, resetPwdToken } = generateResetPwdToken({
         email,

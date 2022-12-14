@@ -18,10 +18,7 @@ const authService = {
   login: async (loginDTO) => {
     const { email, password } = loginDTO
     try {
-      const user = await userModel.findUserByEmail(
-        email,
-        IDENTITY_TYPE.chanchan
-      )
+      const user = await userModel.findUserByEmail(email)
       if (isEmpty(user)) {
         const err = createError(
           400,
@@ -29,10 +26,14 @@ const authService = {
         )
         throw err
       }
-      if (user[0].status !== USER_STATUS.active) {
+      if(user[0].identityType === IDENTITY_TYPE.google){
+        const err = createError(400,"Please login with social account.")
+        throw err
+      }
+      if(user[0].status !== USER_STATUS.active){
         const err = createError(
-          404,
-          "This account has been suspended! Try to contact the admin."
+            401,
+            "This account has been suspended! Try to contact the admin."
         )
         throw err
       }
@@ -43,7 +44,7 @@ const authService = {
         const err = createError(401, "Password incorrect")
         throw err
       }
-      await userModel.updateUserLoginTime(user[0]?.id)
+
       const { accessToken, refreshToken, refreshTokenId } = generateJwtTokens({
         userId: user[0].id,
         role: user[0].role,
@@ -119,6 +120,7 @@ const authService = {
         identityType: user.identityType,
         status: user.status,
       }
+      await userModel.updateUserLoginTime(user.id)
       return authUser
     } catch (err) {
       return Promise.reject(err)
@@ -160,13 +162,7 @@ const authService = {
         })
       } else {
         const user = findUser
-        if (user.status !== USER_STATUS.active) {
-          const err = createError(
-            404,
-            "This account has been suspended! Try to contact the admin."
-          )
-          throw err
-        }
+
         await userModel.updateUserById(user.id, { name, photoUrl })
         authUser = {
           userId: user.id,

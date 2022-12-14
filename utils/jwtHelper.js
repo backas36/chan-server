@@ -52,7 +52,7 @@ const jwtHelper = {
     return decodedToken
   },
   generateNewAccToken: (payload) => {
-    const newAccTokenId = uuidv4()
+    const newAccTokenId =payload.id
     const newAccToken = jwt.sign(
       { ...payload, type: JWT_TYPE.newAccount, newAccTokenId },
       process.env.JWT_NEW_ACCOUNT_SECRET,

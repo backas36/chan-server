@@ -48,7 +48,7 @@ const userController = {
   },
   updateUserById: async (req, res, next) => {
     const userId = req.params.userId
-    const { email, role } = req.body
+    const { email, role , name} = req.body
 
     if (!isGuidValid(userId)) {
       const error = createError(400, "Invalid user id.")
@@ -58,8 +58,8 @@ const userController = {
       const error = createError(422, "Email cannot be empty.")
       return next(error)
     }
-    if (!role) {
-      const error = createError(400, "User role cannot be empty.")
+    if (!role || !name) {
+      const error = createError(400, "User role/name cannot be empty.")
       return next(error)
     }
 
@@ -76,7 +76,22 @@ const userController = {
       next(err)
     }
   },
-  activeAccount: async (req, res, next) => {
+  resendActivate:async(req,res,next) => {
+    const userId = req.params.userId
+    if (!isGuidValid(userId)) {
+      const error = createError(400, "Invalid user id.")
+      return next(error)
+    }
+    try{
+      await userService.resendActivate(userId,req.user.currentUserName)
+      res
+          .status(200)
+          .json({ success: true, message: "Send activate mail successfully." })
+    }catch(err){
+      next(err)
+    }
+  },
+  activateAccount: async (req, res, next) => {
     const { token, password } = req.body
     if (!token || !password) {
       const error = createError(400)
@@ -89,10 +104,10 @@ const userController = {
     }
     try {
       const decodedToken = verifyNewAccToken(token)
-      const id = await userService.activeNewUser(decodedToken, password)
+       await userService.activeNewUser(decodedToken, password)
       res
         .status(201)
-        .json({ success: true, message: "User account activated ", userId: id })
+        .json({ success: true, message: "User account activated " })
     } catch (err) {
       next(err)
     }
@@ -109,9 +124,7 @@ const userController = {
         req.user.currentUserName,
         req.user.userId
       )
-      //const token = generateNewAccToken({ name, email, birthDate, userId: id })
-      //await redisCacheService.saveNewAccountToken(id, token)
-      //await smtpMailService.sendNewAccount(email, token)
+
       res.status(201).json({ success: true, message: "User created" })
     } catch (err) {
       next(err)

@@ -11,11 +11,11 @@ const actionLogModel = {
         const makeFilters = filters.split(".")
         makeFilters.forEach((filter) => {
           const [filed, value] = filter.split(":")
-          if (filed === "actionType") {
-            return builder.whereILike("action_log.actionType", value)
+          if (filed === "type") {
+            return builder.whereILike("action_log.actionType", "%" + value + "%")
           }
           if (filed === "relatedUserName") {
-            return builder.whereILike("user.name", value)
+            return builder.whereILike("user.name", "%" + value + "%")
           }
         })
       }
@@ -35,7 +35,7 @@ const actionLogModel = {
       .select(
         "action_log.id",
         "user.name as relatedUserName",
-        "action_log.actionType as Type",
+        "action_log.actionType as type",
         "action_log.actionSubject as subject",
         "action_log.actionContent as content",
         "action_log.createdAt as createdAt"
@@ -43,13 +43,13 @@ const actionLogModel = {
       .where("action_log.is_deleted", false)
       .andWhere((builder) => searchBuilder(builder))
       .andWhere((builder) => filterBuilder(builder))
-
     if (order) {
       const [field, value] = order.split(":")
       query = query.orderBy(field, value, "last")
     }
 
     query = query.orderBy("action_log.created_at", "desc")
+
     const pageQuery = async (startIndex = 0, pageNumber = 50) => {
       return (query) => query.limit(pageNumber).offset(startIndex)
     }

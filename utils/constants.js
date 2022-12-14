@@ -31,6 +31,7 @@ const constants = {
     deleteAccount: "delete account",
     activeAccount: "active account",
     resetPassword: "reset password",
+    resendActivate:"resend activate mail"
   },
 }
 
