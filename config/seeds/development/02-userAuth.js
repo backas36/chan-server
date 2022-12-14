@@ -12,7 +12,7 @@ exports.seed = async function (knex) {
       identityType: "chanchan-api",
       identifier: "backas36@gmail.com",
       credential:
-        "$2b$10$kaRmOwURRIcbzmL6x.YvXOuZYutMUs1uS5JIRsag03gLhjFV/cxam",
+        "$2b$10$FEcobLNIi0acccwHTJriSOqSfVR6hAmomb3M6Jizj8.1JWfDCmOiG",
     },
     {
       id: "ac9b9c73-f746-4604-b72b-a55f087181f6",
@@ -20,7 +20,7 @@ exports.seed = async function (knex) {
       identityType: "chanchan-api",
       identifier: "basic@gmail.com",
       credential:
-        "$2b$10$kaRmOwURRIcbzmL6x.YvXOuZYutMUs1uS5JIRsag03gLhjFV/cxam",
+        "$2b$10$FEcobLNIi0acccwHTJriSOqSfVR6hAmomb3M6Jizj8.1JWfDCmOiG",
     },
     {
       id: "28c9e3d5-675b-4d79-9341-6e88700dc291",
@@ -28,7 +28,7 @@ exports.seed = async function (knex) {
       identityType: "chanchan-api",
       identifier: "editor@gmail.com",
       credential:
-        "$2b$10$kaRmOwURRIcbzmL6x.YvXOuZYutMUs1uS5JIRsag03gLhjFV/cxam",
+        "$2b$10$FEcobLNIi0acccwHTJriSOqSfVR6hAmomb3M6Jizj8.1JWfDCmOiG",
     },
     {
       id: "f7d07b67-3f00-4b7e-a135-8316e04205e4",
@@ -36,7 +36,7 @@ exports.seed = async function (knex) {
       identityType: "chanchan-api",
       identifier: "user@gmail.com",
       credential:
-        "$2b$10$kaRmOwURRIcbzmL6x.YvXOuZYutMUs1uS5JIRsag03gLhjFV/cxam",
+        "$2b$10$FEcobLNIi0acccwHTJriSOqSfVR6hAmomb3M6Jizj8.1JWfDCmOiG",
     },
   ])
 }

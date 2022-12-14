@@ -3,7 +3,6 @@ require("dotenv").config({
   path: path.resolve(__dirname, `${process.env.NODE_ENV}.env`),
 })
 const express = require("express")
-const cookieParser = require("cookie-parser")
 const app = express()
 const cors = require("cors")
 
@@ -40,7 +39,6 @@ app.use((req, res, next) => {
 
 app.use(express.json({ limit: "10mb" }))
 app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
 
 app.use(globalLimiter)
 
@@ -53,12 +51,12 @@ app.get("/api/status", (req, res) => {
 })
 
 app.post("/register", userController.register)
-app.post("/active-account", userController.activeAccount)
+app.post("/activate-account", userController.activateAccount)
 app.post("/reset-password", userController.resetPassword)
 app.post("/active-reset-password", userController.activeResetPassword)
 
 app.use("/auth", authRouter)
-app.use("/me", authHandler, userStatusHandler, meRouter)
+app.use("/me", authHandler, meRouter)
 app.use(
   "/action-log",
   authHandler,
@@ -67,7 +65,7 @@ app.use(
   actionLogRouter
 )
 app.use(
-  "/user",
+  "/users",
   authHandler,
   userStatusHandler,
   dashboardAuthHandler,

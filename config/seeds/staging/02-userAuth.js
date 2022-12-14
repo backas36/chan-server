@@ -12,7 +12,7 @@ exports.seed = async function (knex) {
       identityType: "chanchan-api",
       identifier: "backas36@gmail.com",
       credential:
-        "$2b$10$kaRmOwURRIcbzmL6x.YvXOuZYutMUs1uS5JIRsag03gLhjFV/cxam",
+        "$2b$10$FEcobLNIi0acccwHTJriSOqSfVR6hAmomb3M6Jizj8.1JWfDCmOiG",
     },
   ])
 }

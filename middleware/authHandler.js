@@ -6,25 +6,28 @@ const { verifyAccessToken } = require("../utils/jwtHelper")
 module.exports = async (req, res, next) => {
   try {
     if (!req?.headers?.authorization) {
-      next(createError.Unauthorized())
+      next(createError(401))
       return
     }
 
     const accessToken = req?.headers?.authorization.split(" ")[1] || null
     if (!accessToken) {
-      next(createError.Unauthorized())
+      next(createError(401))
       return
     }
 
     const decodedToken = verifyAccessToken(accessToken)
     const { iss, type } = decodedToken
     if (iss !== IDENTITY_TYPE.chanchan && type !== JWT_TYPE.accessToken) {
-      next(createError.Unauthorized())
+      next(createError(401))
       return
     }
     req.user = { ...decodedToken }
     next()
   } catch (err) {
-    next(createError.Unauthorized(err?.message || "Unauthorized"))
+    if(err?.name === 'TokenExpiredError'){
+      return next(createError(403, err.message))
+    }
+    next(createError(401))
   }
 }

@@ -36,7 +36,8 @@ const redisCacheService = {
         const err = createError(500, "InternalServerError")
         throw err
       }
-      return await redisCacheModel.getRedisByKey(key)
+      const cachedData =  await redisCacheModel.getRedisByKey(key)
+      return cachedData
     } catch (err) {
       return Promise.reject(err)
     }

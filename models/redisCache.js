@@ -4,12 +4,13 @@ const redisClientModel = {
   storeRedis: async ({ key, value, timeType, time }) => {
     let valueConfig = {}
     if (timeType || time) {
-      valueConfig = { [timeType]: parseInt(time, 10) }
+      valueConfig = { [timeType]: parseInt(time, 10)/1000 }
     }
     return await redisClient.set(key, value, valueConfig)
   },
   getRedisByKey: async (key) => {
-    return await redisClient.get(key)
+    const cacheData = await redisClient.get(key)
+    return cacheData
   },
   delRedisByKey: async (key) => {
     return await redisClient.del(key)

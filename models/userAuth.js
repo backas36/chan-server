@@ -4,6 +4,9 @@ const userAuthModel = {
   createUserAuth: async (userAuthData) => {
     const [id] = await db("user_auth").insert(userAuthData).returning("id")
   },
+  updateUserAuthById: async(userId, newData) => {
+    return db("user_auth").where({userId}).update(newData)
+  },
   findUserAuthByUserId: async (userId, identityType = null) => {
     return db("user_auth")
       .select("*")

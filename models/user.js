@@ -8,7 +8,7 @@ const userModel = {
   },
   findUserByEmail: async (email, identityType = null) => {
     const user = await db("user")
-      .join("user_auth", "user.id", "=", "user_auth.userId")
+      .leftJoin("user_auth", "user.id", "=", "user_auth.userId")
       .select(
         "user.*",
         "user_auth.identityType as identity_type",
@@ -34,7 +34,7 @@ const userModel = {
   },
   findUserById: async (userId, identityType = null) => {
     const user = await db("user")
-      .join("user_auth", "user.id", "=", "user_auth.userId")
+      .leftJoin("user_auth", "user.id", "=", "user_auth.userId")
       .select(
         "user.*",
         "user_auth.identityType as identity_type",
@@ -79,12 +79,11 @@ const userModel = {
           .orWhereILike("user.name", "%" + q + "%")
           .orWhereILike("user.lineId", "%" + q + "%")
           .orWhereILike("user.address", "%" + q + "%")
-          .orWhereILike("user.photoUrl", "%" + q + "%")
       }
     }
 
     let query = db("user")
-      .join("user_auth", "user.id", "=", "user_auth.userId")
+      .leftJoin("user_auth", "user.id", "=", "user_auth.userId")
       .select(
         "user.*",
         "user_auth.identityType as identity_type",

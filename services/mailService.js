@@ -22,19 +22,19 @@ const smtpMailService = {
         from: "ChanChan",
         to: email,
         subject: "New Account in ChanChan",
-        html: `<a href='${process.env.CLIENT_URL}/active-account?token=${token}'>Click here to set password</a>`,
+        html: `<a href='${process.env.CLIENT_URL}/activate-account?token=${token}'>Click here to set password</a>`,
       })
     } catch (err) {
       return Promise.reject(err)
     }
   },
-  sendResetPwd: async (email, token) => {
+  sendResetPwd: async (email, resetPwdToken) => {
     try {
       await transporter.sendMail({
         from: "ChanChan",
         to: email,
         subject: "Reset password in ChanChan account",
-        html: `<a href='${process.env.CLIENT_URL}/active-account?token=${token}'>Click here to reset password</a>`,
+        html: `<a href='${process.env.CLIENT_URL}/setup-password?token=${resetPwdToken}'>Click here to reset password</a>`,
       })
     } catch (err) {
       return Promise.reject(err)
