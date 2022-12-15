@@ -3,6 +3,7 @@ require("dotenv").config({
   path: path.resolve(__dirname, `${process.env.NODE_ENV}.env`),
 })
 const _ = require("lodash")
+const logger = require("./utils/logger");
 
 const camelToSnakeCase = (str) => {
   return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
@@ -19,8 +20,22 @@ module.exports = {
     },
     //connection: process.env.DATABASE_URL,
     pool: {
-      min: 2,
+      min: 0,
       max: 10,
+      acquireTimeoutMillis: 60000,
+      idleTimeoutMillis: 600000,
+      afterCreate:(conn, done)=>{
+        conn.query('SET timezone="UTC";', (err)=>{
+          if(err){
+            done(err,conn)
+          }else{
+            conn.query('SELECT set_limit(0.01);'),
+                (err)=>{
+                  done(err,conn)
+                }
+          }
+        })
+      }
     },
     migrations: {
       directory: __dirname + "/config/migrations",
@@ -53,8 +68,22 @@ module.exports = {
     client: "postgresql",
     connection: process.env.POSTGRES_URL,
     pool: {
-      min: 2,
+      min: 0,
       max: 10,
+      acquireTimeoutMillis: 60000,
+      idleTimeoutMillis: 600000,
+      afterCreate:(conn, done)=>{
+        conn.query('SET timezone="UTC";', (err)=>{
+          if(err){
+            done(err,conn)
+          }else{
+            conn.query('SELECT set_limit(0.01);'),
+                (err)=>{
+                  done(err,conn)
+                }
+          }
+        })
+      }
     },
     migrations: {
       directory: __dirname + "/config/migrations",
