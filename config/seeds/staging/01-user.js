@@ -13,7 +13,12 @@ exports.seed = async function (knex) {
       name: "ashiyang",
       email: "backas36@gmail.com",
       birthDate: "1989-03-06",
-      //password: "$2b$10$kaRmOwURRIcbzmL6x.YvXOuZYutMUs1uS5JIRsag03gLhjFV/cxam",
+    },
+    {
+      id: "7E4ED07C-9391-46F0-A71B-6E679A2EA473",
+      role: USER_ROLES.admin,
+      name: "test",
+      email: "test@test.com",
     },
   ])
 }
