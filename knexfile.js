@@ -58,9 +58,15 @@ module.exports = {
     pool: {
       min: 0,
       max: 10,
-      acquireTimeoutMillis: 60000,
-      idleTimeoutMillis: 600000,
+      acquireTimeoutMillis: 300000,
+      createTimeoutMillis: 300000,
+      destroyTimeoutMillis: 50000,
+      idleTimeoutMillis: 300000,
+      reapIntervalMillis: 10000,
+      createRetryIntervalMillis: 2000,
+      propagateCreateError: false,
     },
+    acquireConnectionTimeout: 60000,
     migrations: {
       directory: __dirname + "/config/migrations",
       tableName: "knex_migrations",
