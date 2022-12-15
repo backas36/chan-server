@@ -14,5 +14,13 @@ exports.seed = async function (knex) {
       credential:
         "$2b$10$FEcobLNIi0acccwHTJriSOqSfVR6hAmomb3M6Jizj8.1JWfDCmOiG",
     },
+    {
+      id: "ac9b9c73-f746-4604-b72b-a55f087181f6",
+      userId: "7E4ED07C-9391-46F0-A71B-6E679A2EA473",
+      identityType: "chanchan-api",
+      identifier: "test@test.com",
+      credential:
+          "$2b$10$FEcobLNIi0acccwHTJriSOqSfVR6hAmomb3M6Jizj8.1JWfDCmOiG",
+    },
   ])
 }
