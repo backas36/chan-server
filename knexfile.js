@@ -24,18 +24,6 @@ module.exports = {
       max: 10,
       acquireTimeoutMillis: 60000,
       idleTimeoutMillis: 600000,
-      afterCreate:(conn, done)=>{
-        conn.query('SET timezone="UTC";', (err)=>{
-          if(err){
-            done(err,conn)
-          }else{
-            conn.query('SELECT set_limit(0.01);'),
-                (err)=>{
-                  done(err,conn)
-                }
-          }
-        })
-      }
     },
     migrations: {
       directory: __dirname + "/config/migrations",
@@ -72,18 +60,6 @@ module.exports = {
       max: 10,
       acquireTimeoutMillis: 60000,
       idleTimeoutMillis: 600000,
-      afterCreate:(conn, done)=>{
-        conn.query('SET timezone="UTC";', (err)=>{
-          if(err){
-            done(err,conn)
-          }else{
-            conn.query('SELECT set_limit(0.01);'),
-                (err)=>{
-                  done(err,conn)
-                }
-          }
-        })
-      }
     },
     migrations: {
       directory: __dirname + "/config/migrations",
