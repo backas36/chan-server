@@ -145,6 +145,6 @@ The conclusion of this project, I implement every thing in enterprise level as p
 
 > Every document or code would be change since in staging phase now.
 
-🔗 [Auth Flow Chart In Backend](https://viewer.diagrams.net/?tags=%7B%7D&highlight=0000ff&edit=_blank&layers=1&nav=1&title=chan-web-auth-flow#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1XCMsOnNDbtGJB0s7oQrJc-eHcFnyPCys%26export%3Ddownload)
+🔗 [Auth Flow Chart In Backend](https://viewer.diagrams.net/?tags=%7B%7D&highlight=0000ff&edit=_blank&layers=1&nav=1&title=backend-auth-flow#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1hrkMuXsjsEvb8_-U92TAwb80acXRIEJJ%26export%3Ddownload)
 
 🔗 [DB Model In Backend](https://viewer.diagrams.net/?tags=%7B%7D&highlight=0000ff&edit=_blank&layers=1&nav=1&title=chan-db#Uhttps%3A%2F%2Fdrive.google.com%2Fuc%3Fid%3D1AIxiGyvhMsHa4MW-AChCgUF0rHuMfVa-%26export%3Ddownload)
