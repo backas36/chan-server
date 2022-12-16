@@ -50,10 +50,11 @@ The project status is in staging phase, backend, database, Redis, and static web
 - nodemon
 
 ## API Doc
-Root path:  `/`
+**Root path:**  `/`
+
 
 |  Method  |  path |  Description |
-|  ------ |  ----  |  ---- | -----------  |  
+|  ------ |  ----  |   -----------  |  
 |  post  |  `register`  | user submit form to register a new account  |  
 |  post  |  `activate-account`  | user submit to activate the account |
 |  post  |  `reset-password`  | submit email to send reset password link |
@@ -62,8 +63,8 @@ Root path:  `/`
 
 ### path : `/auth`
 |  Method  |  path |  Description |
-|  ------ |  ----  |  ---- | -----------  |  
-|  get  |  `/verify`  |  verify user and response account detail only necessary information  |  
+|  ------ |  ----  |  -----------  |  
+|  get  |  `/verify`  |  verify user and response account detail only necessary information |  
 |  get  |  `/verify/google-login`  | user login with google one tap and verify account to response account detail only necessary information, and tokens |
 |  post  |  `/login`  | user login and response tokens|
 |  post  |  `/logout`  | user logout and clean token in Redis|
@@ -71,14 +72,14 @@ Root path:  `/`
 
 ### path : `/me`
 |  Method  |  path |  Description |
-|  ------ |  ----  |  ---- | -----------  |  
+|  ------ |  ----  | -----------  |  
 |  get  |  `/`  |  user get own account detail  |  
 |  patch  |  `/password`  | user change password |
 |  patch  |  `/profile`  | user update own account detail|
 
 ### path : `/users`
 |  Method  |  path |  Description |
-|  ------ |  ----  |  ---- | -----------  |  
+|  ------ |  ----  | -----------  |  
 |  get  |  `/`  |  users list  |  
 |  get  |  `/:userId`  |  response user detail by user id  |  
 |  post  |  `/`  | create new user, and send activate link to the new user |
@@ -88,7 +89,7 @@ Root path:  `/`
 
 ### path : `/action-log`
 |  Method  |  path |  Description |
-|  ------ |  ----  |  ---- | -----------  |  
+|  ------ |  ----  |  -----------  |  
 |  get  |  `/`  |  users actions log list  |  
 |  get  |  `/:logId`  |  response action log detail by  id |
 
