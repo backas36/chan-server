@@ -44,7 +44,6 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: "10mb" }))
 app.use(express.urlencoded({ extended: true }))
 
-app.use(globalLimiter)
 
 app.get("/api/status", (req, res) => {
   logger.info("Checking the API status: Everything is OK")
@@ -54,9 +53,11 @@ app.get("/api/status", (req, res) => {
   })
 })
 
+app.use(globalLimiter)
+
 app.post("/register", userController.register)
 app.post("/activate-account", userController.activateAccount)
-app.post("/reset-password", userController.resetPassword)
+app.post("/reset-password", userController.resetPaassword)
 app.post("/active-reset-password", userController.activeResetPassword)
 
 app.use("/auth", authRouter)
