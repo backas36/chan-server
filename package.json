@@ -8,7 +8,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "export NODE_ENV=development && nodemon index.js",
-    "staging": "export NODE_ENV=staging && node index.js",
+    "staging": "export NODE_ENV=staging && npx knex migrate:latest --knexfile knexfile.js && node index.js",
     "prod": "export NODE_ENV=production && node index.js",
     "migrate": "npx knex migrate:latest --knexfile knexfile.js",
     "un-migrate": "npx knex migrate:rollback --knexfile knexfile.js",
