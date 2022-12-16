@@ -57,7 +57,7 @@ app.use(globalLimiter)
 
 app.post("/register", userController.register)
 app.post("/activate-account", userController.activateAccount)
-app.post("/reset-password", userController.resetPaassword)
+app.post("/reset-password", userController.resetPassword)
 app.post("/active-reset-password", userController.activeResetPassword)
 
 app.use("/auth", authRouter)
