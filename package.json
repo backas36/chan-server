@@ -2,6 +2,9 @@
   "name": "chan-server",
   "version": "1.0.0",
   "description": "Chan Chan api server",
+  "engines": {
+    "node": "^16"
+  },
   "main": "index.js",
   "scripts": {
     "dev": "export NODE_ENV=development && nodemon index.js",
