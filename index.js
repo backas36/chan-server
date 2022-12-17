@@ -18,14 +18,12 @@ const globalLimiter = require("./middleware/globalLimiter")
 const corsOptions = require("./config/corsOptions")
 const logger = require("./utils/logger")
 
-const authRouter = require("./routes/auth")
-const meRouter = require("./routes/me")
-const actionLogRouter = require("./routes/actionLog")
-const userRouter = require("./routes/user")
+const rootRouter = require('./routes/index')
+
 const allowedOrigins = require('./config/allowedOrigins')
 const userController = require("./controllers/user")
-const unitsRouter = require("./routes/units")
-// const productRouter = require("./routes/product")
+
+
 
 app.use(morganHandler)
 app.use(cors(corsOptions))
@@ -57,29 +55,8 @@ app.get("/health-check", (req, res) => {
 
 app.use(globalLimiter)
 
-app.post("/register", userController.register)
-app.post("/activate-account", userController.activateAccount)
-app.post("/reset-password", userController.resetPassword)
-app.post("/active-reset-password", userController.activeResetPassword)
 
-app.use("/auth", authRouter)
-app.use("/me", authHandler, meRouter)
-app.use(
-  "/action-log",
-  authHandler,
-  userStatusHandler,
-  dashboardAuthHandler,
-  actionLogRouter
-)
-app.use(
-  "/users",
-  authHandler,
-  userStatusHandler,
-  dashboardAuthHandler,
-  userRouter
-)
-app.use('/units', authHandler, userStatusHandler, dashboardAuthHandler, unitsRouter)
-// app.use("/product", authHandler, userStatusHandler,dashboardAuthHandler, productRouter)
+app.use(rootRouter)
 
 app.use((req, res, next) => {
   res.status(404)

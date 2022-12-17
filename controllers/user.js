@@ -145,7 +145,7 @@ const userController = {
       const id = await userService.register(req.body)
       res
         .status(201)
-        .json({ success: true, message: "User created", userId: id })
+        .json({ success: true, message: "Registered successfully", userId: id })
     } catch (err) {
       next(err)
     }
