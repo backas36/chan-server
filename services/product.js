@@ -1,10 +1,12 @@
 const createError = require("http-errors")
 const isEmpty = require("lodash/isEmpty")
 
+const productModel = require("../models/product")
 const productService = {
-    listProducts:async()=>{
+    listProducts:async(requestParams)=>{
         try{
-
+            const products = await productModel.findAllProduct(requestParams)
+            return  products
         }catch(err){
             return Promise.reject(err)
         }
