@@ -2,8 +2,8 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function (knex) {
-  return knex.schema
+exports.up = async function (knex) {
+  await knex.schema
     .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
     .dropTableIfExists("actionLog")
     .createTable("actionLog", (table) => {

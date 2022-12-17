@@ -3,8 +3,8 @@ const { USER_ROLES, USER_STATUS } = require("../../utils/constants")
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function (knex) {
-  return knex.schema
+exports.up = async function (knex) {
+  await knex.schema
     .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
     .dropTableIfExists("user")
     .createTable("user", (table) => {

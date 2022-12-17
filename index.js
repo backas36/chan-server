@@ -24,6 +24,8 @@ const actionLogRouter = require("./routes/actionLog")
 const userRouter = require("./routes/user")
 const allowedOrigins = require('./config/allowedOrigins')
 const userController = require("./controllers/user")
+const unitsRouter = require("./routes/units")
+// const productRouter = require("./routes/product")
 
 app.use(morganHandler)
 app.use(cors(corsOptions))
@@ -76,6 +78,8 @@ app.use(
   dashboardAuthHandler,
   userRouter
 )
+app.use('/untis', authHandler, userStatusHandler, dashboardAuthHandler, unitsRouter)
+// app.use("/product", authHandler, userStatusHandler,dashboardAuthHandler, productRouter)
 
 app.use((req, res, next) => {
   res.status(404)
