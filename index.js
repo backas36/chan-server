@@ -78,7 +78,7 @@ app.use(
   dashboardAuthHandler,
   userRouter
 )
-app.use('/untis', authHandler, userStatusHandler, dashboardAuthHandler, unitsRouter)
+app.use('/units', authHandler, userStatusHandler, dashboardAuthHandler, unitsRouter)
 // app.use("/product", authHandler, userStatusHandler,dashboardAuthHandler, productRouter)
 
 app.use((req, res, next) => {

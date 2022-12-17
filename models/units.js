@@ -1,9 +1,24 @@
 const db = require("../config/db")
 
 const unitsModel = {
-    findUnitById:async()=>{},
-    updateUnitById:async()=>{},
-    createUnit:async()=>{},
+    findUnitById:async(unitId)=>{
+        const unit = await db("units")
+            .leftJoin("user", "units.createdBy", "=", "user.id")
+            .select(
+                "units.*",
+                "user.name"
+            )
+            .where("units.id", unitId)
+            .where("units.is_deleted", false)
+        return unit
+    },
+    updateUnitById:async(unitId, newData)=>{
+        return db("units").where({id:unitId}).update(newData)
+    },
+    createUnit:async(data)=>{
+        const [id] = await db("units").insert(data).returning("id")
+        return id
+    },
     findAllUnits : async (paramsData) => {
         const { q, s, n, order, filters } = paramsData
 
@@ -12,8 +27,8 @@ const unitsModel = {
                 const makeFilters = filters.split(".")
                 makeFilters.forEach((filter) => {
                     const [filed, value] = filter.split(":")
-                    if (filed === "class") {
-                        return builder.whereILike("units.class", value)
+                    if (filed === "name") {
+                        return builder.whereILike("units.name", value)
                     }
                     if (filed === "unit") {
                         return builder.whereILike("units.unit", value)
@@ -25,7 +40,7 @@ const unitsModel = {
         const searchBuilder = (builder) => {
             if (q) {
                 return builder
-                    .whereILike("units.class", "%" + q + "%")
+                    .whereILike("units.name", "%" + q + "%")
                     .orWhereILike("units.unit", "%" + q + "%")
             }
         }
@@ -47,12 +62,17 @@ const unitsModel = {
 
         query = query.orderBy("units.created_at", "desc")
 
-        const pageQuery = async (startIndex = 0, pageNumber = 50) => {
+        const pageQuery = async (startIndex , pageNumber) => {
+            if(startIndex === '' || !startIndex){
+                startIndex = 0
+            }
+            if(pageNumber === '' || !pageNumber){
+                pageNumber = 15
+            }
             return (query) => query.limit(pageNumber).offset(startIndex)
         }
 
         const totalLength = (await query.clone()).length
-
         const completedQuery = await pageQuery(s, n)
 
         const data = await completedQuery(query)

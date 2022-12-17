@@ -9,14 +9,14 @@ exports.seed = async function(knex) {
   await knex('units').insert([
     {
       id: "89443930-546f-4c74-b8f2-e80af8a9b210",
-      class:"jug",
+      name:"jug",
       unit:"ml",
       base:1000,
       createdBy:"D1B9CE0D-D61D-41ED-84B0-6B5F22C730A5"
     },
     {
       id:"a3daca16-9bd6-4b78-96b4-674e57ebf346",
-      class:"box",
+      name:"box",
       unit:"piece",
       base:10,
       createdBy:"D1B9CE0D-D61D-41ED-84B0-6B5F22C730A5"

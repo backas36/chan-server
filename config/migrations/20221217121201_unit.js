@@ -10,7 +10,7 @@ exports.up = async function(knex) {
           table
               .uuid("id", { primaryKey: true, useBinaryUuid: true })
               .defaultTo(knex.raw("uuid_generate_v4()"))
-          table.string("class") // jug, can, bottle
+          table.string("name") // jug, can, bottle
           table.string("unit") // ml, g, kg
           table.float("base") // 1000, 500, 1
           table.uuid("createdBy")
@@ -21,6 +21,7 @@ exports.up = async function(knex) {
               .references("user.id")
               .onDelete("CASCADE")
               .onUpdate("CASCADE")
+          table.unique(['name', 'unit',"base"])
       })
 
     await knex.schema
