@@ -3,7 +3,6 @@ const isEmpty = require("lodash/isEmpty")
 
 const unitsModel = require("../models/units")
 const actionLogModel = require("../models/actionLog")
-const {ACTION_TYPE} = require("../utils/constants");
 
 const unitsService ={
     listUnits:async (params) => {

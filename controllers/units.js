@@ -29,9 +29,9 @@ const unitsController = {
         // }
     },
     createUnit:async(req,res, next)=>{
-        const {name, unit, base} = req.body
+        const {name, unit, base,createdBy} = req.body
 
-        if(![name, unit, base].every(Boolean)){
+        if(![name, unit, base,createdBy].every(Boolean)){
             const error = createError(400, "Please enter fields completely.")
             return next(error)
         }

@@ -1,15 +1,19 @@
 const express = require('express');
 const router = express.Router();
 
-const userController = require("../controllers/user");
-const authRouter = require("./auth");
 const authHandler = require("../middleware/authHandler");
-const meRouter = require("./me");
 const userStatusHandler = require("../middleware/userStatusHandler");
 const dashboardAuthHandler = require("../middleware/dashboardAuthHandler");
-const actionLogRouter = require("./actionLog");
+
+const authRouter = require("./auth");
+const meRouter = require("./me");
 const userRouter = require("./user");
 const unitsRouter = require("./units");
+const productRouter = require("./product")
+const poCategoryRouter = require("./poCategoryRouter")
+
+const userController = require("../controllers/user");
+const actionLogRouter = require("./actionLog");
 
 router.post("/register", userController.register)
 router.post("/activate-account", userController.activateAccount)
@@ -33,6 +37,7 @@ router.use(
     userRouter
 )
 router.use('/units', authHandler, userStatusHandler, dashboardAuthHandler, unitsRouter)
-// app.use("/product", authHandler, userStatusHandler,dashboardAuthHandler, productRouter)
+router.use("/product", productRouter)
+router.use("/product-category",poCategoryRouter)
 
 module.exports = router

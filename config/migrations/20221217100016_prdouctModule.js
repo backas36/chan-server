@@ -28,7 +28,7 @@ exports.up = async function(knex) {
             table
                 .uuid("id", { primaryKey: true, useBinaryUuid: true })
                 .defaultTo(knex.raw("uuid_generate_v4()"))
-            table.string("name")
+            table.string("name").unique()
             table.uuid("createdBy")
             table.boolean("isDeleted").notNullable().defaultTo(0)
             table.timestamp("updatedAt").defaultTo(knex.fn.now())
