@@ -10,7 +10,7 @@ exports.up =async  function(knex) {
           table
               .uuid("id", { primaryKey: true, useBinaryUuid: true })
               .defaultTo(knex.raw("uuid_generate_v4()"))
-          table.string("name")
+          table.string("name").unique()
           table.boolean("isDeleted").notNullable().defaultTo(0)
           table.timestamp("updatedAt").defaultTo(knex.fn.now())
           table.timestamp("createdAt").defaultTo(knex.fn.now())
@@ -36,6 +36,8 @@ exports.up =async  function(knex) {
                 .references("ingredient_category.id")
                 .onDelete("CASCADE")
                 .onUpdate("CASCADE")
+            table.unique(["ingredient_category_id", "brand","unit","size"])
+
         })
     await knex.schema
         .alterTable("purchase", table => {

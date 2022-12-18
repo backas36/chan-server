@@ -6,8 +6,7 @@ const poCategoryService = require("../services/poCategory")
 
 const productModel = require("../models/product")
 const actionLogModel = require("../models/actionLog");
-const poCategoryModel = require("../models/poCategory")
-const {ACTION_TYPE} = require("../utils/constants");
+
 const productService = {
     listProducts:async(requestParams)=>{
         try{

@@ -5,11 +5,10 @@ const ingredientModel = {
         const [ingredient] = await db("ingredient")
             .leftJoin("ingredientCategory", "ingredient.ingredientCategoryId", "=","ingredientCategory.id")
             .select("ingredient.*",
-                "ingredientCategory.name as categoryName"
+                "ingredientCategory.name as category"
                 )
             .where("ingredient.isDeleted", false)
             .andWhere("ingredient.id", ingredientId)
-        console.log(ingredient)
         return ingredient
     },
     updateIngredientById: async(ingredientId, newData)=>{
@@ -67,7 +66,7 @@ const ingredientModel = {
         let query = db("ingredient")
             .leftJoin("ingredientCategory", "ingredient.ingredientCategoryId", "=","ingredientCategory.id")
             .select("ingredient.*",
-                "ingredientCategory.name as categoryName"
+                "ingredientCategory.name as category"
             )
             .where("ingredient.isDeleted", false)
             .andWhere((builder) => searchBuilder(builder))

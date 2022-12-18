@@ -8,7 +8,7 @@ const dashboardAuthHandler = require("../middleware/dashboardAuthHandler");
 const editorAuthHandler = require("../middleware/editorAuthHandler");
 
 
-router.get("/", poCategoryController.listProducts)
+router.get("/", poCategoryController.listPoCategory)
 router.get("/:poCategoryId", poCategoryController.getPoCategoryById)
 
 router.post("/",authHandler, userStatusHandler, dashboardAuthHandler, editorAuthHandler,poCategoryController.createPoCategory)

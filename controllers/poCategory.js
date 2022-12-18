@@ -2,14 +2,13 @@ const createError = require("http-errors")
 
 const poCategoryService = require("../services/poCategory")
 const {isGuidValid} = require("../utils");
-const productService = require("../services/product");
 
 const poCategoryController ={
-    listProducts:async(req, res, next)=>{
+    listPoCategory:async(req, res, next)=>{
         const requestParams = req.query
         try{
-            const products = await poCategoryService.listPoCategory(requestParams)
-            res.status(200).json({ success: true, message: "Get All Product Categories", products })
+            const poCategories = await poCategoryService.listPoCategory(requestParams)
+            res.status(200).json({ success: true, message: "Get All Product Categories",poCategories })
         }catch(err){
             next(err)
         }
