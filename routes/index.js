@@ -8,9 +8,8 @@ const dashboardAuthHandler = require("../middleware/dashboardAuthHandler");
 const authRouter = require("./auth");
 const meRouter = require("./me");
 const userRouter = require("./user");
-const unitsRouter = require("./units");
 const productRouter = require("./product")
-const poCategoryRouter = require("./poCategoryRouter")
+const ingredientRouter = require("./ingredient")
 
 const userController = require("../controllers/user");
 const actionLogRouter = require("./actionLog");
@@ -36,8 +35,7 @@ router.use(
     dashboardAuthHandler,
     userRouter
 )
-router.use('/units', authHandler, userStatusHandler, dashboardAuthHandler, unitsRouter)
-router.use("/product", productRouter)
-router.use("/product-category",poCategoryRouter)
+router.use("/products", productRouter)
+router.use("/ingredient", ingredientRouter)
 
 module.exports = router

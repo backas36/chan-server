@@ -3,13 +3,16 @@ const db = require("../config/db")
 const poCategoryModel = {
     findPoCategoryById:async(poCategoryId)=>{
         const poCategory = await db("poCategory")
-            .leftJoin("user", "poCategory.createdBy", "=", "user.id")
-            .select(
-                "poCategory.*",
-                "user.name as createdUserName"
-            )
+            .select("poCategory.*")
             .where("poCategory.is_deleted", false)
             .andWhere("poCategory.id", poCategoryId)
+        return poCategory
+    },
+    findPoCategoryByName:async(poCategoryName)=>{
+        const poCategory = await db("poCategory")
+            .select("poCategory.*")
+            .where("poCategory.is_deleted", false)
+            .andWhere("poCategory.name", poCategoryName)
         return poCategory
     },
     updatePoCategoryById:async(poCategoryId, newData)=>{
@@ -30,9 +33,6 @@ const poCategoryModel = {
                     if (filed === "name") {
                         return builder.whereILike("poCategory.name", value)
                     }
-                    if (filed === "createdBy") {
-                        return builder.whereILike("user.name", value)
-                    }
                 })
             }
         }
@@ -41,16 +41,12 @@ const poCategoryModel = {
             if (q) {
                 return builder
                     .whereILike("poCategory.name", "%" + q + "%")
-                    .orWhereILike("user.name", "%" + q + "%")
             }
         }
 
         let query = db("poCategory")
-            .leftJoin("user", "poCategory.createdBy", "=", "user.id")
             .select(
-                "poCategory.*",
-                "user.name as createdUserName"
-            )
+                "poCategory.*")
             .where("poCategory.is_deleted", false)
             .andWhere((builder) => searchBuilder(builder))
             .andWhere((builder) => filterBuilder(builder))

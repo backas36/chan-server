@@ -1,7 +1,13 @@
 const createError = require("http-errors")
 const isEmpty = require("lodash/isEmpty")
+const omit = require("lodash/omit")
+
+const poCategoryService = require("../services/poCategory")
 
 const productModel = require("../models/product")
+const actionLogModel = require("../models/actionLog");
+const poCategoryModel = require("../models/poCategory")
+const {ACTION_TYPE} = require("../utils/constants");
 const productService = {
     listProducts:async(requestParams)=>{
         try{
@@ -11,30 +17,92 @@ const productService = {
             return Promise.reject(err)
         }
     },
-    getProduct:async()=>{
+    getProduct:async(productId)=>{
         try{
+            const findProduct = await productModel.findProductById(productId)
+
+            if(isEmpty(findProduct)){
+                const err = createError(400, `Product with id ${productId} does not exist.!`)
+                throw err
+            }
+            return findProduct
+        }catch(err){
+            return Promise.reject(err)
+        }
+    },
+    createProduct:async(productDTO, currentUserName, currentUserId)=>{
+        const {name,category,...newProduct} = productDTO
+        try{
+            const findProduct = await productModel.findProductByName(name)
+            if(!isEmpty(findProduct)){
+                const err = createError(409, "Product with name is already exists.")
+                throw err
+            }
+            const categoryId = await poCategoryService.findPoCategoryByName(category)
+            const {id} = await  productModel.createProduct({
+                name,
+                poCategoryId:categoryId,
+                ...newProduct})
+            const actionLogData = {
+                relatedUserId: currentUserId,
+                actionType: "Create product",
+                actionSubject: `Create product by ${currentUserName}`,
+                actionContent: JSON.stringify({
+                    id,
+                    ...productDTO,
+                }),
+            }
+            await actionLogModel.createActionLog(actionLogData)
+        }catch(err){
+            return Promise.reject(err)
+        }
+    },
+    updateProduct:async(productDTO,currentUserName, currentUserId )=>{
+        const {productId, data} = productDTO
+        try{
+            const findProduct = await productModel.findProductById(productId)
+
+            if(isEmpty(findProduct)){
+                const err = createError(400, `Product with id ${productId} does not exist.!`)
+                throw err
+            }
+
+            const categoryId = await poCategoryService.findPoCategoryByName(data.category)
+
+            const newData = {poCategoryId:categoryId,...omit(data, ["category"])}
+
+            await productModel.updateProductById(productId, newData)
+
+            const actionLogData = {
+                relatedUserId: currentUserId,
+                actionType: "Updated product",
+                actionSubject: `Updated product by ${currentUserName}`,
+                actionContent: JSON.stringify(newData),
+            }
+            await actionLogModel.createActionLog(actionLogData)
 
         }catch(err){
             return Promise.reject(err)
         }
     },
-    createProduct:async()=>{
+    deleteProduct:async(productId,currentUserName, currentUserId )=>{
         try{
+            const findProduct = await productModel.findProductById(productId)
 
-        }catch(err){
-            return Promise.reject(err)
-        }
-    },
-    updateProduct:async()=>{
-        try{
+            if(isEmpty(findProduct)){
+                const err = createError(400, `Product with id ${productId} does not exist.!`)
+                throw err
+            }
 
-        }catch(err){
-            return Promise.reject(err)
-        }
-    },
-    deleteProduct:async()=>{
-        try{
-
+            await productModel.updateProductById(productId,{isDeleted: true})
+            const actionLogData = {
+                relatedUserId: currentUserId,
+                actionType: 'Delete Product',
+                actionSubject: `Delete Product by ${currentUserName}`,
+                actionContent: JSON.stringify(productId),
+            }
+            await actionLogModel.createActionLog(actionLogData)
+            return
         }catch(err){
             return Promise.reject(err)
         }

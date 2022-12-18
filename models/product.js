@@ -1,17 +1,35 @@
 const db = require("../config/db")
-
 const productModel = {
-    findProductById:async()=>{
-
+    findProductById:async(productId)=>{
+        const [product] = await db.select(
+            "product.*",
+            "poCategory.name as category",
+        )
+            .from("product")
+            .innerJoin("poCategory","poCategory.id","product.poCategoryId")
+            .where("product.id", productId)
+            .andWhere("product.isDeleted", false)
+        return product
     },
-    updateProductById:async()=>{
-
+    findProductByName:async(productName)=>{
+        const [product] = await db.select(
+            "product.*",
+            "poCategory.name as category",
+        )
+            .from("product")
+            .innerJoin("poCategory","poCategory.id","product.poCategoryId")
+            .where("product.name", productName)
+            .andWhere("product.isDeleted", false)
+        return product
     },
-    createProduct:async()=>{
-
+    updateProductById:async(productId, newData)=>{
+        return db("product").where({id:productId}).update(newData)
     },
-    getProductById:async()=>{
-
+    createProduct:async(newData)=>{
+        const [id] =await db("product")
+            .insert(newData)
+            .returning("id")
+        return id
     },
     findAllProduct:async(paramsData)=>{
         const { q, s, n, order, filters } = paramsData
@@ -21,27 +39,23 @@ const productModel = {
                 const makeFilters = filters.split(".")
                 makeFilters.forEach((filter) => {
                     const [filed, value] = filter.split(":")
-                    if (filed === "name") {
-                        return builder.whereILike("product.name", value)
+                    if (filed === "productName") {
+                        return builder.where("product.name", value)
                     }
                     if (filed === "price") {
                         return builder.where("product.price", value)
                     }
-                    if (filed === "createdByUserName") {
-                        return builder.whereILike("user.name", value)
-                    }
-                    if (filed === "poCategoryName") {
+
+                    if (filed === "category") {
                         return builder.whereILike("poCategory.name", value)
                     }
-                    if (filed === "unitName") {
-                        return builder.whereILike("units.name", value)
+                    if (filed === "sku") {
+                        return builder.whereILike("product.sku", value)
                     }
-                    if (filed === "unit") {
-                        return builder.whereILike("units.unit", value)
+                    if (filed === "variant") {
+                        return builder.whereILike("product.variant", value)
                     }
-                    if (filed === "base") {
-                        return builder.whereILike("units.base", value)
-                    }
+
                 })
             }
         }
@@ -49,24 +63,20 @@ const productModel = {
             if (q) {
                 return builder
                     .whereILike("product.name", "%" + q + "%")
+                    .orWhereILike("product.description", "%" + q + "%")
+                    .orWhereILike("product.sku", "%" + q + "%")
                     .orWhereILike("poCategory.name", "%" + q + "%")
-                    .orWhereILike("units.name", "%" + q + "%")
-                    .orWhereILike("user.name", "%" + q + "%")
-                    .orWhere("product.price","=", q )
-
+                    .orWhereILike("product.variant","%" + q + "%")
             }
         }
 
-        let query = db("product")
-            .leftJoin("user", "product.createdBy", "=", "user.id")
-            .leftJoin("poCategory", "product.poCategoryId","=", "poCategory.id")
-            .leftJoin("units", "product.unitsId","=", "units.id")
-            .select(
-                "product.name", "product.price","product.createdAt",
-                "user.name as createdByUserName", "poCategory.name as poCategoryName",
-                "units.name as unitName","units.unit as unit","units.base as base"
-            )
-            .where("product.is_deleted", false)
+        let query = db.select(
+            "product.*",
+            "poCategory.name as category",
+        )
+            .from("product")
+            .innerJoin("poCategory","poCategory.id","product.poCategoryId")
+            .where("product.isDeleted", false)
             .andWhere((builder) => searchBuilder(builder))
             .andWhere((builder) => filterBuilder(builder))
 
@@ -91,11 +101,11 @@ const productModel = {
         const completedQuery = await pageQuery(s, n)
 
         const data = await completedQuery(query)
+        console.log(data)
         return {
             totalLength,
             data,
         }
     },
 }
-
 module.exports = productModel
