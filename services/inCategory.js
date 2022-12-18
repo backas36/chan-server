@@ -3,7 +3,6 @@ const isEmpty = require("lodash/isEmpty")
 
 const inCategoryModel = require("../models/inCategory")
 const actionLogModel = require("../models/actionLog");
-const poCategoryModel = require("../models/poCategory");
 
 const inCategoryService ={
     findInCategoryByName:async(categoryName,currentUserName, currentUserId)=>{
@@ -89,7 +88,7 @@ const inCategoryService ={
         try{
             const findInCategory = await  inCategoryModel.findInCategory(inCategoryId)
             if(isEmpty(findInCategory)){
-                const err = createError(400, `Product with id ${inCategoryId} does not exist.!`)
+                const err = createError(400, `Ingredient Category with id ${inCategoryId} does not exist.!`)
                 throw err
             }
 

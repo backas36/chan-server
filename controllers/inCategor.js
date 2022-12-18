@@ -17,7 +17,7 @@ const inCategoryController = {
     getInCategoryById:async(req, res, next)=>{
         const inCategoryId =  req.params.inCategoryId
         if (!isGuidValid(inCategoryId)) {
-            const error = createError(400, "Invalid user id.")
+            const error = createError(400, "Invalid id.")
             return next(error)
         }
         try{
@@ -45,7 +45,7 @@ const inCategoryController = {
         const inCategoryId = req.params.inCategoryId
         const {name} = req.body
         if (!isGuidValid(inCategoryId)) {
-            const error = createError(400, "Invalid user id.")
+            const error = createError(400, "Invalid id.")
             return next(error)
         }
 
@@ -64,7 +64,7 @@ const inCategoryController = {
     deleteInCategory: async(req, res, next) => {
         const inCategoryId = req.params.inCategoryId
         if (!isGuidValid(inCategoryId)) {
-            const error = createError(400, "Invalid user id.")
+            const error = createError(400, "Invalid id.")
             return next(error)
         }
         try{

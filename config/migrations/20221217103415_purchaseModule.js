@@ -17,6 +17,7 @@ exports.up = async function(knex) {
           table.boolean("isDeleted").notNullable().defaultTo(0)
           table.timestamp("updatedAt").defaultTo(knex.fn.now())
           table.timestamp("createdAt").defaultTo(knex.fn.now())
+              table.unique(["name", "type"])
       })
     await knex.schema
         .raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
