@@ -38,7 +38,7 @@ const productService = {
                 const err = createError(409, "Product with name is already exists.")
                 throw err
             }
-            const categoryId = await poCategoryService.findPoCategoryByName(category)
+            const categoryId = await poCategoryService.findPoCategoryByName(category,currentUserName, currentUserId)
             const {id} = await  productModel.createProduct({
                 name,
                 poCategoryId:categoryId,
@@ -67,7 +67,7 @@ const productService = {
                 throw err
             }
 
-            const categoryId = await poCategoryService.findPoCategoryByName(data.category)
+            const categoryId = await poCategoryService.findPoCategoryByName(data.category,currentUserName, currentUserId)
 
             const newData = {poCategoryId:categoryId,...omit(data, ["category"])}
 
