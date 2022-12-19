@@ -14,6 +14,7 @@ const poCategoryRouter = require("./poCategory")
 const inCategoryRouter = require("./inCategory")
 const supplierRouter = require("./supplier")
 const purchaseRouter = require("./purchase")
+const poImageRouter = require("./poImage")
 
 
 const userController = require("../controllers/user");
@@ -42,17 +43,10 @@ router.use(
 )
 router.use("/products", productRouter)
 router.use("/products-category", poCategoryRouter)
-router.use("/ingredients",authHandler,
-    userStatusHandler,
-    dashboardAuthHandler, ingredientRouter)
-router.use("/ingredient-category",authHandler,
-    userStatusHandler,
-    dashboardAuthHandler,inCategoryRouter )
-router.use("/supplier",authHandler,
-    userStatusHandler,
-    dashboardAuthHandler, supplierRouter)
-router.use("/purchase",authHandler,
-    userStatusHandler,
-    dashboardAuthHandler, purchaseRouter)
+router.use("/products-images", poImageRouter)
+router.use("/ingredients",authHandler, userStatusHandler, dashboardAuthHandler, ingredientRouter)
+router.use("/ingredient-category",authHandler, userStatusHandler, dashboardAuthHandler,inCategoryRouter )
+router.use("/supplier",authHandler, userStatusHandler, dashboardAuthHandler, supplierRouter)
+router.use("/purchase",authHandler, userStatusHandler, dashboardAuthHandler, purchaseRouter)
 
 module.exports = router

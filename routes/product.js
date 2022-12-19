@@ -17,4 +17,5 @@ router.patch("/:productId",authHandler, userStatusHandler, dashboardAuthHandler,
 router.delete("/:productId",authHandler, userStatusHandler, dashboardAuthHandler, editorAuthHandler, productController.deleteProduct)
 
 
+
 module.exports = router
