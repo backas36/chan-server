@@ -13,6 +13,8 @@ const ingredientRouter = require("./ingredient")
 const poCategoryRouter = require("./poCategory")
 const inCategoryRouter = require("./inCategory")
 const supplierRouter = require("./supplier")
+const purchaseRouter = require("./purchase")
+
 
 const userController = require("../controllers/user");
 const actionLogRouter = require("./actionLog");
@@ -46,6 +48,11 @@ router.use("/ingredients",authHandler,
 router.use("/ingredient-category",authHandler,
     userStatusHandler,
     dashboardAuthHandler,inCategoryRouter )
-router.use("/supplier", supplierRouter)
+router.use("/supplier",authHandler,
+    userStatusHandler,
+    dashboardAuthHandler, supplierRouter)
+router.use("/purchase",authHandler,
+    userStatusHandler,
+    dashboardAuthHandler, purchaseRouter)
 
 module.exports = router

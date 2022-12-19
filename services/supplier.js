@@ -5,19 +5,20 @@ const supplierModel = require("../models/supplier")
 const actionLogModel = require("../models/actionLog");
 
 const supplierService ={
-    findSupplierByName:async(supplierName,currentUserName, currentUserId)=>{
+    findSupplier:async(supplierData,currentUserName, currentUserId)=>{
+        const data = {name:supplierData.supplierName, type:supplierData.supplierType}
         let supplierId
         try{
-            const [findSupplier] = await supplierModel.finSupplierByName(supplierName)
+            const [findSupplier] = await supplierModel.finSupplierByName(data)
             if(isEmpty(findSupplier)){
-                const {id} = await supplierModel.createSupplier({name:supplierName})
+                const {id} = await supplierModel.createSupplier(data)
                 supplierId = id
 
                 const actionLogData = {
                     relatedUserId: currentUserId,
                     actionType: "Create supplier",
                     actionSubject: `Create supplier by ${currentUserName}`,
-                    actionContent: JSON.stringify({id, name:supplierName}),
+                    actionContent: JSON.stringify({id, ...data}),
                 }
                 await actionLogModel.createActionLog(actionLogData)
             }else{

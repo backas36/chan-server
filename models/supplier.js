@@ -8,11 +8,12 @@ const supplierModel = {
             .andWhere("supplier.id", supplierId)
         return supplier
     },
-    finSupplierByName:async(supplierName)=>{
+    finSupplierByName:async(findData)=>{
     const supplier = await db("supplier")
         .select("supplier.*")
         .where("supplier.is_deleted", false)
-        .andWhere("supplier.name", supplierName)
+        .andWhere("supplier.name", findData.name)
+        .andWhere("supplier.type", findData.type)
         return supplier
     },
     updateSupplier:async(supplierId, newData)=>{

@@ -11,9 +11,9 @@ const editorAuthHandler = require("../middleware/editorAuthHandler");
 router.get("/", supplierController.listSuppliers)
 router.get("/:supplierId", supplierController.getSupplierById)
 
-router.post("/",authHandler, userStatusHandler, dashboardAuthHandler, editorAuthHandler, supplierController.createSupplier)
-router.patch("/:supplierId", authHandler, userStatusHandler, dashboardAuthHandler, editorAuthHandler, supplierController.updateSupplier)
-router.delete("/:supplierId",authHandler, userStatusHandler, dashboardAuthHandler, editorAuthHandler, supplierController.deleteSupplier )
+router.post("/", editorAuthHandler, supplierController.createSupplier)
+router.patch("/:supplierId", editorAuthHandler, supplierController.updateSupplier)
+router.delete("/:supplierId", editorAuthHandler, supplierController.deleteSupplier )
 
 
 module.exports = router

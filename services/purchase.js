@@ -1,0 +1,112 @@
+const createError = require("http-errors")
+const isEmpty = require("lodash/isEmpty")
+const omit = require("lodash/omit")
+
+const purchaseModel = require("../models/purchase")
+const supplierService = require("../services/supplier")
+const actionLogModel = require("../models/actionLog");
+
+const skipKeys = ["supplierName", "supplierType","location","supplierContact",
+    "ingredientName", "ingredientBrand", "ingredientUnit", "ingredientSize", "ingredientSku",
+    "ingredientDesc", "categoryName"]
+
+const purchaseService = {
+    listAllPurchase:async(requestParams)=>{
+        try{
+            const purchases = await purchaseModel.findAllPurchase(requestParams)
+            return  purchases
+        }catch(err){
+            return Promise.reject(err)
+        }
+    },
+    getPurchase:async(purchaseId)=>{
+        try{
+            const findPurchase = await purchaseModel.findPurchaseById(purchaseId)
+
+            if(isEmpty(findPurchase)){
+                const err = createError(400, `Purchase with id ${purchaseId} does not exist.!`)
+                throw err
+            }
+            return findPurchase
+        }catch(err){
+            return Promise.reject(err)
+        }
+    },
+    createPurchase:async (purchaseDTO, currentUserName, currentUserId ) => {
+        const {supplierName, supplierType, ...newPurchase } = purchaseDTO
+
+        try{
+            const supplierId = await  supplierService.findSupplier({supplierName, supplierType},currentUserName, currentUserId)
+            const newData = {
+                supplierId,
+                createdBy:currentUserId,
+                ...(omit(newPurchase, skipKeys))
+            }
+            const {id} = await purchaseModel.createPurchase(newData)
+
+            const actionLogData = {
+                relatedUserId: currentUserId,
+                actionType: "Create purchase",
+                actionSubject: `Create purchase by ${currentUserName}`,
+                actionContent: JSON.stringify({
+                    id,
+                    ...newData,
+                }),
+            }
+            await actionLogModel.createActionLog(actionLogData)
+        }catch(err){
+            return Promise.reject(err)
+        }
+    },
+    updatePurchase:async(purchaseDTO, currentUserName, currentUserId) => {
+        const {purchaseId, data } = purchaseDTO
+        const {supplierName, supplierType} = data
+        try{
+            const findPurchase = await purchaseModel.findPurchaseById(purchaseId)
+            if(isEmpty(findPurchase)){
+                const err = createError(400, `Purchase with id ${purchaseId} does not exist.!`)
+                throw err
+            }
+
+            const supplierId = await  supplierService.findSupplier({supplierName, supplierType},currentUserName, currentUserId)
+            const updateData = {
+                supplierId,
+                ...(omit(data, skipKeys))
+            }
+            await purchaseModel.updatePurchase(purchaseId,updateData)
+
+            const actionLogData = {
+                relatedUserId: currentUserId,
+                actionType: "Updated purchase",
+                actionSubject: `Updated purchase by ${currentUserName}`,
+                actionContent: JSON.stringify(updateData),
+            }
+            await actionLogModel.createActionLog(actionLogData)
+        }catch(err){
+            return Promise.reject(err)
+        }
+    },
+    deletePurchase:async(purchaseId, currentUserName, currentUserId) => {
+        try{
+            const findPurchase = await purchaseModel.findPurchaseById(purchaseId)
+            if(isEmpty(findPurchase)){
+                const err = createError(400, `Purchase with id ${purchaseId} does not exist.!`)
+                throw err
+            }
+
+            await purchaseModel.updatePurchase(purchaseId,{isDeleted: true})
+
+            const actionLogData = {
+                relatedUserId: currentUserId,
+                actionType: "Deleted purchase",
+                actionSubject: `Deleted purchase by ${currentUserName}`,
+                actionContent: JSON.stringify(purchaseId),
+            }
+            await actionLogModel.createActionLog(actionLogData)
+        }catch(err){
+            return Promise.reject(err)
+        }
+    }
+}
+
+module.exports = purchaseService

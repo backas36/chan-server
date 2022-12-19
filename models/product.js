@@ -101,7 +101,6 @@ const productModel = {
         const completedQuery = await pageQuery(s, n)
 
         const data = await completedQuery(query)
-        console.log(data)
         return {
             totalLength,
             data,

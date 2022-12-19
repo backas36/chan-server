@@ -16,7 +16,7 @@ const productController = {
     getProduct:async(req, res, next)=>{
         const productId =  req.params.productId
         if (!isGuidValid(productId)) {
-            const error = createError(400, "Invalid user id.")
+            const error = createError(400, "Invalid id.")
             return next(error)
         }
         try{
@@ -45,7 +45,7 @@ const productController = {
         const {name, price, sku, category,variant} = req.body
 
         if (!isGuidValid(productId)) {
-            const error = createError(400, "Invalid user id.")
+            const error = createError(400, "Invalid id.")
             return next(error)
         }
         if(![name, price, sku, category,variant].every(Boolean)){
@@ -64,7 +64,7 @@ const productController = {
     deleteProduct:async(req, res, next)=>{
         const productId =  req.params.productId
         if (!isGuidValid(productId)) {
-            const error = createError(400, "Invalid user id.")
+            const error = createError(400, "Invalid id.")
             return next(error)
         }
         try{

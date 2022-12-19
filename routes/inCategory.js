@@ -10,8 +10,8 @@ const editorAuthHandler = require("../middleware/editorAuthHandler");
 router.get("/", inCategoryController.listInCategory)
 router.get("/:inCategoryId", inCategoryController.getInCategoryById)
 
-router.post("/",authHandler, userStatusHandler, dashboardAuthHandler, editorAuthHandler, inCategoryController.createInCategory)
-router.patch("/:inCategoryId", authHandler, userStatusHandler, dashboardAuthHandler, editorAuthHandler, inCategoryController.updateInCategory)
-router.delete("/:inCategoryId",authHandler, userStatusHandler, dashboardAuthHandler, editorAuthHandler, inCategoryController.deleteInCategory )
+router.post("/", editorAuthHandler, inCategoryController.createInCategory)
+router.patch("/:inCategoryId",  editorAuthHandler, inCategoryController.updateInCategory)
+router.delete("/:inCategoryId", editorAuthHandler, inCategoryController.deleteInCategory )
 
 module.exports = router
