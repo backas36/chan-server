@@ -125,15 +125,15 @@ const recipeModel = {
         const completedQuery = await pageQuery(s, n)
         const data = await completedQuery(query)
         data.forEach(row => row.cost=(row.quantity* row.unitPrice))
-        console.log({
-            totalLength,
-            data,
-        })
+        // console.log({
+        //     totalLength,
+        //     data,
+        // })
         return {
             totalLength,
             data,
         }
     }
 }
-recipeModel.findRecipeByPoId("c0c8beaf-be50-4436-9bde-025f04a6bf39",{filters:"createByName:ashiyang"})
+// recipeModel.findRecipeByPoId("c0c8beaf-be50-4436-9bde-025f04a6bf39",{filters:"createByName:ashiyang"})
 module.exports = recipeModel
