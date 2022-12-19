@@ -15,6 +15,7 @@ const inCategoryRouter = require("./inCategory")
 const supplierRouter = require("./supplier")
 const purchaseRouter = require("./purchase")
 const poImageRouter = require("./poImage")
+const recipeRouter = require("./recipe")
 
 
 const userController = require("../controllers/user");
@@ -48,5 +49,6 @@ router.use("/ingredients",authHandler, userStatusHandler, dashboardAuthHandler, 
 router.use("/ingredient-category",authHandler, userStatusHandler, dashboardAuthHandler,inCategoryRouter )
 router.use("/supplier",authHandler, userStatusHandler, dashboardAuthHandler, supplierRouter)
 router.use("/purchase",authHandler, userStatusHandler, dashboardAuthHandler, purchaseRouter)
+router.use("/recipe",authHandler, userStatusHandler, dashboardAuthHandler, recipeRouter )
 
 module.exports = router

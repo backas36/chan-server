@@ -1,6 +1,5 @@
 const db = require("../config/db")
 const productModel = {
-
     findProductById:async(productId)=>{
         const [product] = await db.select(
             "product.*",
