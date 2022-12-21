@@ -28,8 +28,8 @@ const purchaseController = {
     },
     createPurchase:async(req, res, next) => {
 
-        const {quantity, purchaseDate, unitPrice, purchasePrice,supplierName, supplierType} = req.body
-        if(![quantity, purchaseDate, unitPrice, purchasePrice,supplierName, supplierType].every(Boolean)){
+        const {quantity, purchaseDate, unitPrice, purchasePrice,supplierName, supplierType, ingredientId} = req.body
+        if(![quantity, purchaseDate, unitPrice, purchasePrice,supplierName, supplierType, ingredientId].every(Boolean)){
             const error = createError(400, "Please enter fields completely.")
             return next(error)
         }
@@ -43,14 +43,14 @@ const purchaseController = {
     },
     updatePurchase:async(req, res, next) => {
         const purchaseId = req.params.purchaseId
-        const {quantity, purchaseDate, unitPrice, purchasePrice,supplierName, supplierType} = req.body
+        const {quantity, purchaseDate, unitPrice, purchasePrice,supplierName, supplierType,ingredientId} = req.body
 
         if (!isGuidValid(purchaseId)) {
             const error = createError(400, "Invalid id.")
             return next(error)
         }
 
-        if(![quantity, purchaseDate, unitPrice, purchasePrice,supplierName, supplierType].every(Boolean)){
+        if(![quantity, purchaseDate, unitPrice, purchasePrice,supplierName, supplierType,ingredientId].every(Boolean)){
             const error = createError(400, "Please enter fields completely.")
             return next(error)
         }

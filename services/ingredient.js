@@ -60,7 +60,7 @@ const ingredientService = {
             const inCategoryId = await inCategoryService.findInCategoryByName(data.category,currentUserName, currentUserId)
             const newData = {
                 ingredientCategoryId:inCategoryId,
-                ...omit(data, ['category'])
+                ...omit(data, ['category','isNew'])
             }
             await ingredientModel.updateIngredientById(ingredientId, newData)
             const actionLogData = {

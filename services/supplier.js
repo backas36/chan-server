@@ -1,5 +1,7 @@
 const createError = require("http-errors")
 const isEmpty = require("lodash/isEmpty")
+const omit = require("lodash/omit")
+
 
 const supplierModel = require("../models/supplier")
 const actionLogModel = require("../models/actionLog");
@@ -73,7 +75,7 @@ const supplierService ={
                 throw err
             }
 
-            await supplierModel.updateSupplier(supplierId, data)
+            await supplierModel.updateSupplier(supplierId, omit(data, ["isNew"]))
             const actionLogData = {
                 relatedUserId: currentUserId,
                 actionType: "Updated supplier",

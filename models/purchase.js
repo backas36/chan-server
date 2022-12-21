@@ -112,6 +112,7 @@ const purchaseModel = {
                 "purchase.quantity","purchase.purchaseDate",
                 "purchase.ingredientExpDate", "purchase.unitPrice",
                 "purchase.purchasePrice",
+                    "supplier.id as supplierId",
                 "supplier.name as supplierName", "supplier.type as supplierType",
                 "supplier.location", "supplier.contact as supplierContact",
                 "ingredient.id as ingredientId",

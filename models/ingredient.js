@@ -40,10 +40,7 @@ const ingredientModel = {
                     if (filed === "sku") {
                         return builder.whereILike("ingredient.sku", value)
                     }
-                    if (filed === "description") {
-                        return builder.whereILike("ingredient.description", value)
-                    }
-                    if (filed === "categoryName") {
+                    if (filed === "category") {
                         return builder.whereILike("ingredientCategory.name", value)
                     }
                 })

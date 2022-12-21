@@ -36,7 +36,7 @@ exports.up =async  function(knex) {
                 .references("ingredient_category.id")
                 .onDelete("CASCADE")
                 .onUpdate("CASCADE")
-            table.unique(["ingredient_category_id", "brand","unit","size"])
+            table.unique(["name","ingredient_category_id", "brand","unit","size"])
 
         })
     await knex.schema

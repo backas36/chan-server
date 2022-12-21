@@ -17,7 +17,7 @@ const ingredientController = {
         const ingredientId = req.params.ingredientId
 
         if (!isGuidValid(ingredientId)) {
-            const error = createError(400, "Invalid user id.")
+            const error = createError(400, "Invalid id.")
             return next(error)
         }
 
@@ -46,7 +46,7 @@ const ingredientController = {
         const ingredientId = req.params.ingredientId
         const {name, category, unit, size, sku} = req.body
         if (!isGuidValid(ingredientId)) {
-            const error = createError(400, "Invalid user id.")
+            const error = createError(400, "Invalid id.")
             return next(error)
         }
         if(![name, category, sku, unit, size].every(Boolean)){
@@ -65,7 +65,7 @@ const ingredientController = {
     deleteIngredient:async(req,res,next) => {
         const ingredientId = req.params.ingredientId
         if (!isGuidValid(ingredientId)) {
-            const error = createError(400, "Invalid user id.")
+            const error = createError(400, "Invalid id.")
             return next(error)
         }
         try{
@@ -81,12 +81,3 @@ const ingredientController = {
 
 
 module.exports = ingredientController
-
-/*
-async(req,res,next) => {
-        try{
-        }catch(err){
-            next(err)
-        }
-    },
- */

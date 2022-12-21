@@ -32,16 +32,16 @@ const supplierModel = {
                 makeFilters.forEach((filter) => {
                     const [filed, value] = filter.split(":")
                     if (filed === "name") {
-                        return builder.where("supplier.name", value)
+                        return builder.whereILike("supplier.name", value)
                     }
                     if (filed === "type") {
-                        return builder.where("supplier.type", value)
+                        return builder.whereILike("supplier.type", value)
                     }
                     if (filed === "location") {
-                        return builder.where("supplier.location", value)
+                        return builder.whereILike("supplier.location", value)
                     }
                     if (filed === "contact") {
-                        return builder.where("supplier.contact", value)
+                        return builder.whereILike("supplier.contact", value)
                     }
                 })
             }

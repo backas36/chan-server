@@ -5,10 +5,11 @@ const omit = require("lodash/omit")
 const purchaseModel = require("../models/purchase")
 const supplierService = require("../services/supplier")
 const actionLogModel = require("../models/actionLog");
+const ingredientService = require("../services/ingredient")
 
 const skipKeys = ["supplierName", "supplierType","location","supplierContact",
     "ingredientName", "ingredientBrand", "ingredientUnit", "ingredientSize", "ingredientSku",
-    "ingredientDesc", "categoryName"]
+    "ingredientDesc", "categoryName", "isNew"]
 
 const purchaseService = {
     listAllPurchase:async(requestParams)=>{
@@ -33,15 +34,20 @@ const purchaseService = {
         }
     },
     createPurchase:async (purchaseDTO, currentUserName, currentUserId ) => {
-        const {supplierName, supplierType, ...newPurchase } = purchaseDTO
+        const {supplierName, supplierType,ingredientId, ...newPurchase } = purchaseDTO
 
         try{
             const supplierId = await  supplierService.findSupplier({supplierName, supplierType},currentUserName, currentUserId)
+            const findIngredient = await ingredientService.getIngredient(ingredientId)
+
             const newData = {
                 supplierId,
+                ingredientId:findIngredient.id,
                 createdBy:currentUserId,
                 ...(omit(newPurchase, skipKeys))
             }
+
+
             const {id} = await purchaseModel.createPurchase(newData)
 
             const actionLogData = {
@@ -60,7 +66,7 @@ const purchaseService = {
     },
     updatePurchase:async(purchaseDTO, currentUserName, currentUserId) => {
         const {purchaseId, data } = purchaseDTO
-        const {supplierName, supplierType} = data
+        const {supplierName, supplierType,ingredientId} = data
         try{
             const findPurchase = await purchaseModel.findPurchaseById(purchaseId)
             if(isEmpty(findPurchase)){
@@ -69,8 +75,11 @@ const purchaseService = {
             }
 
             const supplierId = await  supplierService.findSupplier({supplierName, supplierType},currentUserName, currentUserId)
+            const findIngredient = await ingredientService.getIngredient(ingredientId)
+
             const updateData = {
                 supplierId,
+                ingredientId:findIngredient.id,
                 ...(omit(data, skipKeys))
             }
             await purchaseModel.updatePurchase(purchaseId,updateData)
