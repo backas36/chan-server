@@ -34,10 +34,10 @@ const purchaseService = {
         }
     },
     createPurchase:async (purchaseDTO, currentUserName, currentUserId ) => {
-        const {supplierName, supplierType,ingredientId, ...newPurchase } = purchaseDTO
+        const {ingredientId,supplierId, ...newPurchase } = purchaseDTO
 
         try{
-            const supplierId = await  supplierService.findSupplier({supplierName, supplierType},currentUserName, currentUserId)
+             await  supplierService.getSupplier(supplierId)
             const findIngredient = await ingredientService.getIngredient(ingredientId)
 
             const newData = {
@@ -66,7 +66,7 @@ const purchaseService = {
     },
     updatePurchase:async(purchaseDTO, currentUserName, currentUserId) => {
         const {purchaseId, data } = purchaseDTO
-        const {supplierName, supplierType,ingredientId} = data
+        const {ingredientId,supplierId} = data
         try{
             const findPurchase = await purchaseModel.findPurchaseById(purchaseId)
             if(isEmpty(findPurchase)){
@@ -74,7 +74,7 @@ const purchaseService = {
                 throw err
             }
 
-            const supplierId = await  supplierService.findSupplier({supplierName, supplierType},currentUserName, currentUserId)
+            await  supplierService.getSupplier(supplierId)
             const findIngredient = await ingredientService.getIngredient(ingredientId)
 
             const updateData = {
