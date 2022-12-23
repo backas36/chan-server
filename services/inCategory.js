@@ -12,7 +12,6 @@ const inCategoryService ={
             if(isEmpty(findInCategory)){
                 const {id} = await inCategoryModel.createInCategory({name:categoryName})
                 categoryId = id
-
                 const actionLogData = {
                     relatedUserId: currentUserId,
                     actionType: "Create inventory category",

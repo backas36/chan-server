@@ -68,7 +68,7 @@ const productService = {
 
             const categoryId = await poCategoryService.findPoCategoryByName(data.category,currentUserName, currentUserId)
 
-            const newData = {poCategoryId:categoryId,...omit(data, ["category"])}
+            const newData = {...omit(data, ["category"]),poCategoryId:categoryId}
 
             await productModel.updateProductById(productId, newData)
 

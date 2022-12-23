@@ -7,7 +7,7 @@ const purchaseModel = {
                 "purchase.id",
                 "purchase.quantity","purchase.purchaseDate",
                 "purchase.ingredientExpDate", "purchase.unitPrice",
-                "purchase.purchasePrice",
+                "purchase.purchasePrice", "purchase.brand",
                 "supplier.id as supplierId",
                 "ingredient.id as ingredientId",
                 "ingredientCategory.name as categoryName",
@@ -44,9 +44,9 @@ const purchaseModel = {
                     if (filed === "quantity") {
                         return builder.where("purchase.quantity",'=', value)
                     }
-                    if (filed === "unitPrice") {
-                        return builder.where("purchase.unitPrice",'=', value)
-                    }
+                    // if (filed === "unitPrice") {
+                    //     return builder.where("purchase.unitPrice",'=', value)
+                    // }
                     if(filed === 'purchaseDate'){
                         return builder.where("purchase.purchaseDate","=", value)
                     }
@@ -55,6 +55,9 @@ const purchaseModel = {
                     }
                     if(filed === 'purchasePrice'){
                         return builder.where("purchase.purchasePrice","=", value)
+                    }
+                    if (filed === "brand") {
+                        return builder.whereILike("purchase.brand", value)
                     }
                     if(filed === 'createdByName'){
                         return builder.whereILike("user.name", value)
@@ -68,20 +71,11 @@ const purchaseModel = {
                     if (filed === "ingredientId") {
                         return builder.where("ingredient.id",value)
                     }
-                    if (filed === "brand") {
-                        return builder.where("ingredient.brand", value)
-                    }
-                    if (filed === "unit") {
-                        return builder.where("ingredient.unit","=", value)
-                    }
-                    if (filed === "size") {
-                        return builder.where("ingredient.size","=", value)
-                    }
                     if (filed === "sku") {
-                        return builder.where("ingredient.sku","=", value)
+                        return builder.whereILike("ingredient.sku", value)
                     }
                     if (filed === "categoryName") {
-                        return builder.where("ingredientCategory.name","=", value)
+                        return builder.whereILike("ingredientCategory.name", value)
                     }
                 })
             }
@@ -93,7 +87,7 @@ const purchaseModel = {
                     .whereILike("supplier.name", "%" + q + "%")
                     .orWhereILike("supplier.type", "%" + q + "%")
                     .orWhereILike("ingredient.name","%" + q + "%")
-                    .orWhereILike("ingredient.brand", "%" + q + "%")
+                    .orWhereILike("purchase.brand", "%" + q + "%")
                     .orWhereILike("ingredientCategory.name", "%" + q + "%")
                     .orWhereILike("user.name","%" + q + "%")
             }
@@ -104,7 +98,7 @@ const purchaseModel = {
                 "purchase.id",
                 "purchase.quantity","purchase.purchaseDate",
                 "purchase.ingredientExpDate", "purchase.unitPrice",
-                "purchase.purchasePrice",
+                "purchase.purchasePrice", "purchase.brand",
                 "supplier.id as supplierId",
                 "ingredient.id as ingredientId",
                 "ingredientCategory.name as categoryName",
@@ -120,6 +114,7 @@ const purchaseModel = {
             .where("purchase.isDeleted", false)
             .andWhere((builder) => searchBuilder(builder))
             .andWhere((builder) => filterBuilder(builder))
+
         if (order) {
             const [field, value] = order.split(":")
             query = query.orderBy(field, value, "last")

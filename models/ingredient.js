@@ -28,15 +28,6 @@ const ingredientModel = {
                     if (filed === "name") {
                         return builder.whereILike("ingredient.name", value)
                     }
-                    if (filed === "brand") {
-                        return builder.whereILike("ingredient.brand", value)
-                    }
-                    if (filed === "unit") {
-                        return builder.where("ingredient.unit","=", value)
-                    }
-                    if (filed === "size") {
-                        return builder.whereILike("ingredient.size", value)
-                    }
                     if (filed === "sku") {
                         return builder.whereILike("ingredient.sku", value)
                     }
@@ -51,8 +42,6 @@ const ingredientModel = {
             if (q) {
                 return builder
                     .whereILike("ingredient.name", "%" + q + "%")
-                    .orWhereILike("ingredient.brand", "%" + q + "%")
-                    .orWhereILike("ingredient.size", "%" + q + "%")
                     .orWhereILike("ingredient.sku", "%" + q + "%")
                     .orWhereILike("ingredient.description", "%" + q + "%")
                     .orWhereILike("ingredientCategory.name","%" + q + "%")
@@ -90,7 +79,7 @@ const ingredientModel = {
         const completedQuery = await pageQuery(s, n)
 
         const data = await completedQuery(query)
-        console.log(data)
+        // console.log(data)
         return {
             totalLength,
             data,

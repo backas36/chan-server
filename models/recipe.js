@@ -1,7 +1,7 @@
 const db = require("../config/db")
 
 const recipeModel = {
-    findRecipeByPoId: async(productId, paramsData) => {
+    findAllRecipes: async(paramsData) => {
         const { q, s, n, order, filters } = paramsData
 
         const filterBuilder = (builder) => {
@@ -74,7 +74,7 @@ const recipeModel = {
             .select("recipe.ingredientId").avg("purchase.unitPrice as unitPrice")
             .innerJoin("purchase", "recipe.ingredientId", "purchase.ingredientId")
             .where("recipe.isDeleted",false)
-            .andWhere("recipe.productId", productId)
+            // .andWhere("recipe.productId", productId)
             .groupBy('recipe.ingredientId').as("cost")
 
         let query = db
@@ -100,8 +100,8 @@ const recipeModel = {
             .innerJoin("user", "recipe.createdBy","user.id")
             .innerJoin('poCategory', "product.poCategoryId", "poCategory.id")
             .from("productIngredient as recipe")
-            .andWhere((builder) => searchBuilder(builder))
-            .andWhere((builder) => filterBuilder(builder))
+            // .andWhere((builder) => searchBuilder(builder))
+            // .andWhere((builder) => filterBuilder(builder))
 
 
 
@@ -135,5 +135,5 @@ const recipeModel = {
         }
     }
 }
-// recipeModel.findRecipeByPoId("c0c8beaf-be50-4436-9bde-025f04a6bf39",{filters:"createByName:ashiyang"})
+// recipeModel.findAllRecipes({})
 module.exports = recipeModel

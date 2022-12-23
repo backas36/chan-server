@@ -68,9 +68,10 @@ const supplierModel = {
         if (order) {
             const [field, value] = order.split(":")
             query = query.orderBy(field, value, "last")
+        }else{
+            query = query.orderBy("supplier.created_at", "desc")
         }
 
-        query = query.orderBy("supplier.created_at", "desc")
 
         const pageQuery = async (startIndex , pageNumber) => {
             if(startIndex === '' || !startIndex){

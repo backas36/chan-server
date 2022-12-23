@@ -27,12 +27,12 @@ const purchaseController = {
         }
     },
 createPurchase:async(req, res, next) => {
-        const {quantity, purchaseDate, unitPrice, purchasePrice,supplierId, ingredientId} = req.body
+        const {quantity, purchaseDate, unitPrice, purchasePrice, brand ,supplierId, ingredientId} = req.body
         if (!isGuidValid(ingredientId) || !isGuidValid(supplierId)) {
             const error = createError(400, "Invalid id.")
             return next(error)
         }
-        if(![quantity, purchaseDate, unitPrice, purchasePrice,supplierId, ingredientId].every(Boolean)){
+        if(![quantity, purchaseDate, unitPrice, purchasePrice,supplierId, ingredientId,brand].every(Boolean)){
             const error = createError(400, "Please enter fields completely.")
             return next(error)
         }
@@ -46,14 +46,14 @@ createPurchase:async(req, res, next) => {
     },
     updatePurchase:async(req, res, next) => {
         const purchaseId = req.params.purchaseId
-        const {quantity, purchaseDate, unitPrice, purchasePrice,supplierId, ingredientId} = req.body
+        const {quantity, purchaseDate, unitPrice, purchasePrice,supplierId, ingredientId,brand} = req.body
 
         if (!isGuidValid(purchaseId) || !isGuidValid(ingredientId) || !isGuidValid(supplierId)) {
             const error = createError(400, "Invalid id.")
             return next(error)
         }
 
-        if(![quantity, purchaseDate, unitPrice, purchasePrice,supplierId, ingredientId].every(Boolean)){
+        if(![quantity, purchaseDate, unitPrice, purchasePrice,supplierId, ingredientId,brand].every(Boolean)){
             const error = createError(400, "Please enter fields completely.")
             return next(error)
         }

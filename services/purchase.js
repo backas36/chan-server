@@ -41,10 +41,10 @@ const purchaseService = {
             const findIngredient = await ingredientService.getIngredient(ingredientId)
 
             const newData = {
+                ...(omit(newPurchase, skipKeys)),
                 supplierId,
                 ingredientId:findIngredient.id,
                 createdBy:currentUserId,
-                ...(omit(newPurchase, skipKeys))
             }
 
 
@@ -78,9 +78,9 @@ const purchaseService = {
             const findIngredient = await ingredientService.getIngredient(ingredientId)
 
             const updateData = {
+                ...(omit(data, skipKeys)),
                 supplierId,
                 ingredientId:findIngredient.id,
-                ...(omit(data, skipKeys))
             }
             await purchaseModel.updatePurchase(purchaseId,updateData)
 

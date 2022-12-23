@@ -33,6 +33,7 @@ exports.up = async function(knex) {
             table.date("ingredientExpDate")
             table.float("unitPrice")
             table.float("purchasePrice")
+                table.string("brand")
             table.uuid('createdBy')
             table.boolean("isDeleted").notNullable().defaultTo(0)
             table.timestamp("updatedAt").defaultTo(knex.fn.now())

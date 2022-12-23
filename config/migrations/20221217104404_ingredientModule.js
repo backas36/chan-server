@@ -24,10 +24,7 @@ exports.up =async  function(knex) {
                 .defaultTo(knex.raw("uuid_generate_v4()"))
             table.string('name')
             table.uuid("ingredient_category_id")
-            table.string("brand")
-            table.float("unit")
-            table.string("size")
-            table.string("sku")
+            table.string("sku").notNullable()
             table.text("description")
             table.boolean("isDeleted").notNullable().defaultTo(0)
             table.timestamp("updatedAt").defaultTo(knex.fn.now())
@@ -36,7 +33,7 @@ exports.up =async  function(knex) {
                 .references("ingredient_category.id")
                 .onDelete("CASCADE")
                 .onUpdate("CASCADE")
-            table.unique(["name","ingredient_category_id", "brand","unit","size"])
+            table.unique(["ingredient_category_id", "name"])
 
         })
     await knex.schema

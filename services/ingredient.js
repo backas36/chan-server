@@ -51,16 +51,17 @@ const ingredientService = {
     },
     updateIngredient:async(ingredientDTO,currentUserName, currentUserId) => {
         const {ingredientId, data} = ingredientDTO
+        const {category} = data
         try{
             const findIngredient = await ingredientModel.findIngredientById(ingredientId)
             if(isEmpty(findIngredient)){
                 const err = createError(400, `ingredient with id ${ingredientId} does not exist.!`)
                 throw err
             }
-            const inCategoryId = await inCategoryService.findInCategoryByName(data.category,currentUserName, currentUserId)
+            const inCategoryId = await inCategoryService.findInCategoryByName(category,currentUserName, currentUserId)
             const newData = {
+                ...omit(data, ['category','isNew']),
                 ingredientCategoryId:inCategoryId,
-                ...omit(data, ['category','isNew'])
             }
             await ingredientModel.updateIngredientById(ingredientId, newData)
             const actionLogData = {

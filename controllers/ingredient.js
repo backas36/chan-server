@@ -29,8 +29,8 @@ const ingredientController = {
         }
     },
     createIngredient:async(req,res,next) => {
-        const {name, category, unit, size, sku} = req.body
-        if(![name, category, sku, unit, size].every(Boolean)){
+        const {name, category, sku} = req.body
+        if(![name, category, sku,].every(Boolean)){
             const error = createError(400, "Please enter fields completely.")
             return next(error)
         }
@@ -44,12 +44,12 @@ const ingredientController = {
     },
     updateInventory:async(req,res,next) => {
         const ingredientId = req.params.ingredientId
-        const {name, category, unit, size, sku} = req.body
+        const {name, category, sku} = req.body
         if (!isGuidValid(ingredientId)) {
             const error = createError(400, "Invalid id.")
             return next(error)
         }
-        if(![name, category, sku, unit, size].every(Boolean)){
+        if(![name, category, sku].every(Boolean)){
             const error = createError(400, "Please enter fields completely.")
             return next(error)
         }
