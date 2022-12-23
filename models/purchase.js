@@ -8,13 +8,9 @@ const purchaseModel = {
                 "purchase.quantity","purchase.purchaseDate",
                 "purchase.ingredientExpDate", "purchase.unitPrice",
                 "purchase.purchasePrice",
-                "supplier.name as supplierName", "supplier.type as supplierType",
-                "supplier.location", "supplier.contact as supplierContact",
+                "supplier.id as supplierId",
                 "ingredient.id as ingredientId",
-                "ingredient.name as ingredientName", "ingredient.brand as ingredientBrand",
-                "ingredient.unit as ingredientUnit", "ingredient.size as ingredientSize",
-                "ingredient.sku as ingredientSku","ingredient.description as ingredientDesc",
-                "ingredientCategory.name as inCategoryName",
+                "ingredientCategory.name as categoryName",
                 "user.name as createdByName",
                 "purchase.createdAt",
                 "purchase.updatedAt",
@@ -60,28 +56,28 @@ const purchaseModel = {
                     if(filed === 'purchasePrice'){
                         return builder.where("purchase.purchasePrice","=", value)
                     }
-                    if(filed === 'createByName'){
-                        return builder.whereILike("user.name","%" + value + "%")
+                    if(filed === 'createdByName'){
+                        return builder.whereILike("user.name", value)
                     }
-                    if (filed === "supplierName") {
-                        return builder.whereILike("supplier.name", "%" + value + "%")
+                    if (filed === "supplierId") {
+                        return builder.where("supplier.id","=",   value )
                     }
-                    if (filed === "supplierType") {
-                        return builder.where("supplier.type","=", value)
+                    if (filed === "type") {
+                        return builder.where("supplier.type", value)
                     }
-                    if (filed === "ingredientName") {
-                        return builder.where("ingredient.name","=", value)
+                    if (filed === "ingredientId") {
+                        return builder.where("ingredient.id",value)
                     }
-                    if (filed === "ingredientBrand") {
-                        return builder.where("ingredient.brand","=", value)
+                    if (filed === "brand") {
+                        return builder.where("ingredient.brand", value)
                     }
-                    if (filed === "ingredientUnit") {
+                    if (filed === "unit") {
                         return builder.where("ingredient.unit","=", value)
                     }
-                    if (filed === "ingredientBrand") {
+                    if (filed === "size") {
                         return builder.where("ingredient.size","=", value)
                     }
-                    if (filed === "ingredientBrand") {
+                    if (filed === "sku") {
                         return builder.where("ingredient.sku","=", value)
                     }
                     if (filed === "categoryName") {
@@ -96,11 +92,8 @@ const purchaseModel = {
                 return builder
                     .whereILike("supplier.name", "%" + q + "%")
                     .orWhereILike("supplier.type", "%" + q + "%")
-                    .orWhereILike("supplier.location", "%" + q + "%")
-                    .orWhereILike("supplier.contact", "%" + q + "%")
                     .orWhereILike("ingredient.name","%" + q + "%")
                     .orWhereILike("ingredient.brand", "%" + q + "%")
-                    .orWhereILike("ingredient.description", "%" + q + "%")
                     .orWhereILike("ingredientCategory.name", "%" + q + "%")
                     .orWhereILike("user.name","%" + q + "%")
             }
@@ -112,13 +105,8 @@ const purchaseModel = {
                 "purchase.quantity","purchase.purchaseDate",
                 "purchase.ingredientExpDate", "purchase.unitPrice",
                 "purchase.purchasePrice",
-                    "supplier.id as supplierId",
-                "supplier.name as supplierName", "supplier.type as supplierType",
-                "supplier.location", "supplier.contact as supplierContact",
+                "supplier.id as supplierId",
                 "ingredient.id as ingredientId",
-                "ingredient.name as ingredientName", "ingredient.brand as ingredientBrand",
-                "ingredient.unit as ingredientUnit", "ingredient.size as ingredientSize",
-                "ingredient.sku as ingredientSku","ingredient.description as ingredientDesc",
                 "ingredientCategory.name as categoryName",
                 "user.name as createdByName",
                 "purchase.createdAt",
@@ -132,13 +120,13 @@ const purchaseModel = {
             .where("purchase.isDeleted", false)
             .andWhere((builder) => searchBuilder(builder))
             .andWhere((builder) => filterBuilder(builder))
-
         if (order) {
             const [field, value] = order.split(":")
             query = query.orderBy(field, value, "last")
+        }else{
+         query = query.orderBy("purchase.created_at", "desc")
         }
 
-        query = query.orderBy("purchase.created_at", "desc")
 
         const pageQuery = async (startIndex , pageNumber) => {
             if(startIndex === '' || !startIndex){
@@ -154,7 +142,6 @@ const purchaseModel = {
         const completedQuery = await pageQuery(s, n)
 
         const data = await completedQuery(query)
-        console.log(data)
         return {
             totalLength,
             data,
@@ -162,3 +149,21 @@ const purchaseModel = {
     }
 }
 module.exports = purchaseModel
+
+/**
+ *              "purchase.id",
+ *                 "purchase.quantity","purchase.purchaseDate",
+ *                 "purchase.ingredientExpDate", "purchase.unitPrice",
+ *                 "purchase.purchasePrice",
+ *                     "supplier.id as supplierId",
+ *                 "supplier.name as supplierName", "supplier.type as supplierType",
+ *                 "supplier.location", "supplier.contact as supplierContact",
+ *                 "ingredient.id as ingredientId",
+ *                 "ingredient.name as ingredientName", "ingredient.brand as ingredientBrand",
+ *                 "ingredient.unit as ingredientUnit", "ingredient.size as ingredientSize",
+ *                 "ingredient.sku as ingredientSku","ingredient.description as ingredientDesc",
+ *                 "ingredientCategory.name as categoryName",
+ *                 "user.name as createdByName",
+ *                 "purchase.createdAt",
+ *                 "purchase.updatedAt",
+ */
