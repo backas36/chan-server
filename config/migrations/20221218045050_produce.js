@@ -21,6 +21,10 @@ exports.up = async function(knex) {
                 .references("user.id")
                 .onDelete("CASCADE")
                 .onUpdate("CASCADE")
+            table.foreign("productId")
+                .references("product.id")
+                .onDelete("CASCADE")
+                .onUpdate("CASCADE")
         })
 
 };

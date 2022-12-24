@@ -145,20 +145,3 @@ const purchaseModel = {
 }
 module.exports = purchaseModel
 
-/**
- *              "purchase.id",
- *                 "purchase.quantity","purchase.purchaseDate",
- *                 "purchase.ingredientExpDate", "purchase.unitPrice",
- *                 "purchase.purchasePrice",
- *                     "supplier.id as supplierId",
- *                 "supplier.name as supplierName", "supplier.type as supplierType",
- *                 "supplier.location", "supplier.contact as supplierContact",
- *                 "ingredient.id as ingredientId",
- *                 "ingredient.name as ingredientName", "ingredient.brand as ingredientBrand",
- *                 "ingredient.unit as ingredientUnit", "ingredient.size as ingredientSize",
- *                 "ingredient.sku as ingredientSku","ingredient.description as ingredientDesc",
- *                 "ingredientCategory.name as categoryName",
- *                 "user.name as createdByName",
- *                 "purchase.createdAt",
- *                 "purchase.updatedAt",
- */

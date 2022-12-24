@@ -38,7 +38,7 @@ exports.up = async function(knex) {
                 .defaultTo(knex.raw("uuid_generate_v4()"))
             table.uuid("poCategoryId")
             table.string("name")
-            table.float("price")
+            table.float("fixedPrice")
             table.string("variant")
             table.string("sku")
             table.text("description")

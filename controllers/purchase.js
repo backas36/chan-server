@@ -16,7 +16,7 @@ const purchaseController = {
     getPurchase:async(req, res, next)=>{
         const purchaseId =  req.params.purchaseId
         if (!isGuidValid(purchaseId)) {
-            const error = createError(400, "Invalid user id.")
+            const error = createError(400, "Invalid id.")
             return next(error)
         }
         try{
@@ -26,14 +26,16 @@ const purchaseController = {
             next(err)
         }
     },
-createPurchase:async(req, res, next) => {
+    createPurchase:async(req, res, next) => {
         const {quantity, purchaseDate, unitPrice, purchasePrice, brand ,supplierId, ingredientId} = req.body
-        if (!isGuidValid(ingredientId) || !isGuidValid(supplierId)) {
-            const error = createError(400, "Invalid id.")
-            return next(error)
-        }
+
         if(![quantity, purchaseDate, unitPrice, purchasePrice,supplierId, ingredientId,brand].every(Boolean)){
             const error = createError(400, "Please enter fields completely.")
+            return next(error)
+        }
+
+        if (!isGuidValid(ingredientId) || !isGuidValid(supplierId)) {
+            const error = createError(400, "Invalid id.")
             return next(error)
         }
         try{

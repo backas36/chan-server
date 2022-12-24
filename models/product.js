@@ -42,8 +42,8 @@ const productModel = {
                     if (filed === "productName") {
                         return builder.where("product.name", value)
                     }
-                    if (filed === "price") {
-                        return builder.where("product.price", value)
+                    if (filed === "fixedPrice") {
+                        return builder.where("product.fixedPrice", value)
                     }
 
                     if (filed === "category") {

@@ -1,7 +1,25 @@
 const db = require("../config/db")
+const knex = require("knex");
 
 const recipeModel = {
-    findAllRecipes: async(paramsData) => {
+    findRecipeById:async (recipeId) => {
+        const [recipe] = await db("productIngredient")
+            .select()
+            .where("productIngredient.isDeleted", false)
+            .andWhere("productIngredient.id", recipeId)
+        return recipe
+    },
+    updateRecipeById: async(recipeId, newData) => {
+        return db("productIngredient").where({id:recipeId}).update(newData)
+    },
+    createRecipe:async(newData) => {
+      const [id] = await db("productIngredient")
+          .insert(newData)
+          .returning("id")
+
+        return id
+    },
+    findRecipeByProductId: async (productId, paramsData) => {
         const { q, s, n, order, filters } = paramsData
 
         const filterBuilder = (builder) => {
@@ -9,100 +27,67 @@ const recipeModel = {
                 const makeFilters = filters.split(".")
                 makeFilters.forEach((filter) => {
                     const [filed, value] = filter.split(":")
-                    if (filed === "poCategoryName") {
-                        return builder.where("poCategory.name", value)
-                    }
-                    if (filed === "productName") {
-                        return builder.where("product.name", value)
-                    }
-                    if (filed === "productPrice") {
-                        return builder.where("product.price",'=', value)
+                    if (filed === "categoryName") {
+                        return builder.whereILike("inCa.name", value)
                     }
                     if (filed === "quantity") {
-                        return builder.where("recipe.quantity",'=', value)
+                        return builder.where("cost.quantity", value)
                     }
-                    if (filed === "unitPrice") {
-                        return builder.where("cost.unitPrice",'=', value)
+                    if (filed === "name") {
+                        return builder.whereILike("ingredient.name", value)
                     }
-                    if (filed === "productVariant") {
-                        return builder.where("product.variant", value)
+                    if (filed === "sku") {
+                        return builder.whereILike("ingredient.sku", value)
                     }
-                    if (filed === "productSku") {
-                        return builder.where("product.sku", value)
-                    }
-                    if (filed === "ingredientName") {
-                        return builder.where("ingredient.name", value)
-                    }
-
-                    if (filed === "ingredientBrand") {
-                        return builder.where("ingredient.brand", value)
-                    }
-
-                    if (filed === "ingredientUnit") {
-                        return builder.where("ingredient.unit",'=', value)
-                    }
-                    if (filed === "ingredientSize") {
-                        return builder.where("ingredient.size", value)
-                    }
-                    if (filed === "inCategoryName") {
-                        return builder.where("inCa.name", value)
-                    }
-                    if (filed === "createByName") {
-                        return builder.where("user.name", value)
+                    if(filed === 'createdByName'){
+                        return builder.whereILike("user.name", value)
                     }
                 })
             }
         }
-
         const searchBuilder = (builder) => {
             if (q) {
                 return builder
-                    .whereILike("product.name", "%" + q + "%")
-                    .orWhereILike("product.description", "%" + q + "%")
-                    .orWhereILike("product.sku", "%" + q + "%")
-                    .orWhereILike("poCategory.name", "%" + q + "%")
-                    .orWhereILike("product.variant","%" + q + "%")
-                    .orWhereILike("ingredient.name","%" + q + "%")
-                    .orWhereILike("ingredient.brand","%" + q + "%")
-                    .orWhereILike("ingredient.size","%" + q + "%")
-                    .orWhereILike("ingredient.description","%" + q + "%")
+                    // .where("cost.quantity","=", q)
+                    .whereILike("inCa.name", "%" + q + "%")
+                    .orWhereILike("ingredient.sku", "%" + q + "%")
+                    .orWhereILike("ingredient.name", "%" + q + "%")
+                    .orWhereILike("ingredient.description", "%" + q + "%")
                     .orWhereILike("user.name","%" + q + "%")
+
+
             }
         }
 
-        let subQuery = db("productIngredient as recipe")
-            .select("recipe.ingredientId").avg("purchase.unitPrice as unitPrice")
-            .innerJoin("purchase", "recipe.ingredientId", "purchase.ingredientId")
-            .where("recipe.isDeleted",false)
-            // .andWhere("recipe.productId", productId)
-            .groupBy('recipe.ingredientId').as("cost")
-
-        let query = db
+        let costQuery = db("productIngredient as recipe")
             .select(
-                "recipe.id", "recipe.productId",
-                "recipe.ingredientId",
-                "poCategory.name as poCategoryName",
-                "product.name as productName", "product.price as productPrice",
-                "recipe.quantity",
-                "cost.unitPrice",
-                "product.variant as productVariant", "product.sku as productSku",
-                "ingredient.id as IngredientId",
-                "ingredient.name as ingredientName", "ingredient.brand as ingredientBrand",
-                "ingredient.unit as ingredientUnit", "ingredient.size as ingredientSize",
-                "ingredient.description as ingredientDesc",
-                "inCa.name as inCategoryName",
-                "user.name as createByName",
+                "recipe.id", "recipe.createdBy",
+                "recipe.ingredientId","recipe.quantity",
+                db.raw(`json_agg(json_build_object(
+                    'purchaseDate', purchase.purchase_date, 'unitPrice', purchase.unit_price
+                )) AS cost_list`)
             )
-            .innerJoin(subQuery, "recipe.ingredientId", "cost.ingredientId")
-            .innerJoin("product","recipe.productId","product.id")
-            .innerJoin("ingredient", "recipe.ingredientId","ingredient.id")
-            .innerJoin("ingredientCategory as inCa","ingredient.ingredientCategoryId","inCa.id")
-            .innerJoin("user", "recipe.createdBy","user.id")
-            .innerJoin('poCategory', "product.poCategoryId", "poCategory.id")
-            .from("productIngredient as recipe")
-            // .andWhere((builder) => searchBuilder(builder))
-            // .andWhere((builder) => filterBuilder(builder))
+            .leftJoin("purchase", "recipe.ingredientId", "purchase.ingredientId")
+            .where("recipe.isDeleted", false)
+            .andWhere("recipe.productId", productId)
+            .groupBy("recipe.id","recipe.createdBy","recipe.ingredientId","recipe.quantity").as("cost")
 
+        let query = db(costQuery)
+            .select(
+                "cost.id", "cost.createdBy",
+                "cost.ingredientId","inCa.id as categoryId",
+                "cost.quantity",
+                "inCa.name as categoryName","ingredient.name",
+                "ingredient.sku","ingredient.description",
+                "cost.costList",
+                "user.name as createdByName",
+                "ingredient.createdAt"
+                )
+            .leftJoin("ingredient", "cost.ingredientId","ingredient.id")
+            .leftJoin("ingredientCategory as inCa", "ingredient.ingredientCategoryId","inCa.id")
+            .leftJoin("user", "cost.createdBy", "user.id")
+            .andWhere((builder) => searchBuilder(builder))
+            .andWhere((builder) => filterBuilder(builder))
 
 
         if (order) {
@@ -110,7 +95,7 @@ const recipeModel = {
             query = query.orderBy(field, value, "last")
         }
 
-        query = query.orderBy("recipe.created_at", "desc")
+        query = query.orderBy("ingredient.created_at", "desc")
 
         const pageQuery = async (startIndex , pageNumber) => {
             if(startIndex === '' || !startIndex){
@@ -124,16 +109,12 @@ const recipeModel = {
         const totalLength = (await query.clone()).length
         const completedQuery = await pageQuery(s, n)
         const data = await completedQuery(query)
-        data.forEach(row => row.cost=(row.quantity* row.unitPrice))
-        // console.log({
-        //     totalLength,
-        //     data,
-        // })
         return {
             totalLength,
             data,
         }
     }
 }
-// recipeModel.findAllRecipes({})
+
+// recipeModel.findRecipeByProductId("c0c8beaf-be50-4436-9bde-025f04a6bf39",{})
 module.exports = recipeModel

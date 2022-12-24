@@ -27,8 +27,8 @@ const productController = {
         }
     },
     createProduct:async(req, res, next)=>{
-        const {name, price, sku, category, variant} = req.body
-        if(![name, price, sku, category, variant].every(Boolean)){
+        const {name, fixedPrice, sku, category, variant} = req.body
+        if(![name, fixedPrice, sku, category, variant].every(Boolean)){
             const error = createError(400, "Please enter fields completely.")
             return next(error)
         }
@@ -42,13 +42,13 @@ const productController = {
     },
     updateProduct:async(req, res, next)=>{
         const productId = req.params.productId
-        const {name, price, sku, category,variant} = req.body
+        const {name, fixedPrice, sku, category,variant} = req.body
 
         if (!isGuidValid(productId)) {
             const error = createError(400, "Invalid id.")
             return next(error)
         }
-        if(![name, price, sku, category,variant].every(Boolean)){
+        if(![name, fixedPrice, sku, category,variant].every(Boolean)){
             const error = createError(400, "Please enter fields completely.")
             return next(error)
         }

@@ -17,7 +17,7 @@ exports.seed = async function(knex) {
     {
       id:"c0c8beaf-be50-4436-9bde-025f04a6bf39",
       name:"Chan - original madeleine",
-      price:60,
+      fixedPrice:60,
       variant:"orignal",
       poCategoryId:"e2ee3cbf-b03d-40ec-b825-e3a080d40128",
       description:"Classic French Madeleines",
