@@ -31,13 +31,13 @@ const recipeModel = {
                         return builder.whereILike("inCa.name", value)
                     }
                     if (filed === "ingredientId") {
-                        return builder.where("cost.ingredientId", value)
+                        return builder.where("recipe.ingredientId", value)
                     }
                     if (filed === "categoryId") {
                         return builder.where("inCa.id", value)
                     }
                     if (filed === "quantity") {
-                        return builder.where("cost.quantity", value)
+                        return builder.where("recipe.quantity", value)
                     }
                     if (filed === "name") {
                         return builder.whereILike("ingredient.name", value)
@@ -64,32 +64,54 @@ const recipeModel = {
             }
         }
 
-        let costQuery = db("productIngredient as recipe")
+        let latest =db("purchase")
             .select(
-                "recipe.id", "recipe.createdBy",
-                "recipe.ingredientId","recipe.quantity","recipe.createdAt",
-                db.raw(`json_agg(json_build_object(
-                    'purchaseDate', purchase.purchase_date, 'unitPrice', purchase.unit_price
-                ) ORDER BY  purchase.purchase_date DESC ) AS cost_list`)
+                "purchase.ingredientId", "purchase.unitPrice",
+                db.raw(`row_number() over (PARTITION BY purchase.ingredient_id
+                    ORDER BY purchase.purchase_date DESC
+                ) AS row_numbers`)
             )
-            .leftJoin("purchase", "recipe.ingredientId", "purchase.ingredientId")
+            .where("purchase.isDeleted", false)
+            .as("latest")
+
+
+        let groupLatest = db
+            .select(
+                "latest.ingredientId",
+                db.raw(`round(CAST(avg(latest.unit_price) AS numeric),2) as latest_cost`)
+            )
+            .from(latest)
+            .whereRaw(`latest.row_numbers <= 3`)
+            .groupBy("latest.ingredient_id")
+            .as("gl")
+        let avgQuery = db
+            .select("p.ingredientId",
+                db.raw(`round(CAST(avg(p.unit_price) AS numeric),2) as avg_cost`)
+            )
+            .from("purchase as p")
+            .where("p.isDeleted", false)
+            .groupBy("p.ingredientId")
+            .as("aq")
+
+        let query = db("productIngredient as recipe")
+            .select(
+                "recipe.id", "inCa.id as categoryId",  "recipe.ingredientId",
+                "recipe.createdBy","inCa.name as categoryName",
+                "in.name",
+              "recipe.quantity",
+                "in.sku",
+                "aq.avg_cost", "gl.latest_cost","in.description",
+                "user.name as createdByName",
+                "recipe.createdAt",
+
+            )
+            .leftJoin("ingredient as in", "recipe.ingredientId","in.id")
+            .leftJoin("ingredientCategory as inCa", "in.ingredientCategoryId","inCa.id")
+            .leftJoin(avgQuery, "recipe.ingredientId", "aq.ingredientId")
+            .leftJoin(groupLatest, "recipe.ingredientId", "gl.ingredientId")
+            .leftJoin("user", "recipe.createdBy", "user.id")
             .where("recipe.isDeleted", false)
             .andWhere("recipe.productId", productId)
-            .groupBy("recipe.id","recipe.createdBy","recipe.ingredientId","recipe.quantity","recipe.createdAt").as("cost")
-        let query = db(costQuery)
-            .select(
-                "cost.id", "cost.createdBy",
-                "cost.ingredientId","inCa.id as categoryId",
-                "cost.quantity",
-                "inCa.name as categoryName","ingredient.name",
-                "ingredient.sku","ingredient.description",
-                "cost.costList",
-                "user.name as createdByName",
-                "cost.createdAt"
-                )
-            .leftJoin("ingredient", "cost.ingredientId","ingredient.id")
-            .leftJoin("ingredientCategory as inCa", "ingredient.ingredientCategoryId","inCa.id")
-            .leftJoin("user", "cost.createdBy", "user.id")
             .andWhere((builder) => searchBuilder(builder))
             .andWhere((builder) => filterBuilder(builder))
 
@@ -99,7 +121,7 @@ const recipeModel = {
             query = query.orderBy(field, value, "last")
         }
 
-        query = query.orderBy("cost.created_at", "desc")
+        query = query.orderBy("recipe.created_at", "desc")
 
         const pageQuery = async (startIndex , pageNumber) => {
             if(startIndex === '' || !startIndex){
@@ -113,6 +135,7 @@ const recipeModel = {
         const totalLength = (await query.clone()).length
         const completedQuery = await pageQuery(s, n)
         const data = await completedQuery(query)
+        console.log(data)
         return {
             totalLength,
             data,
@@ -120,5 +143,4 @@ const recipeModel = {
     }
 }
 
-// recipeModel.findRecipeByProductId("db44901b-a165-466c-ad44-873981b86ccf",{})
 module.exports = recipeModel

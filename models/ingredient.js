@@ -152,5 +152,4 @@ const ingredientModel = {
         }
     },
 }
-ingredientModel.findIngredientById("a78b3852-d5db-4533-bc64-2b12a5f54b02")
 module.exports = ingredientModel

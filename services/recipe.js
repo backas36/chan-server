@@ -87,7 +87,7 @@ const recipeService = {
             await actionLogModel.createActionLog(actionLogData)
 
         }catch(err){
-
+            return Promise.reject(err)
         }
     },
 }
