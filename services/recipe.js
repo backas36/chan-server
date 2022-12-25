@@ -19,7 +19,12 @@ const recipeService = {
         try{
             await ingredientService.getIngredient(ingredientId)
             const findProduct = await productService.getProduct(productId)
-            const {id} = await recipeModel.createRecipe({...recipeDTO, productId})
+            const newData = {
+                ...recipeDTO,
+                productId,
+                createdBy:currentUserId
+            }
+            const {id} = await recipeModel.createRecipe(newData)
             const actionLogData = {
                 relatedUserId: currentUserId,
                 actionType: "Create recipe",
@@ -48,7 +53,7 @@ const recipeService = {
             const updateData = {
                 productId:findProduct.id,
                 ingredientId:findIngredient.id,
-                quality: data.quality
+                quantity: data.quantity
             }
             await recipeModel.updateRecipeById(recipeId, updateData)
             const actionLogData = {
@@ -65,7 +70,26 @@ const recipeService = {
             return Promise.reject(err)
         }
     },
+    deleteRecipeById: async (recipeId,currentUserName, currentUserId ) => {
+        try{
+            const findRecipe = await recipeModel.findRecipeById(recipeId)
+            if(isEmpty(findRecipe)){
+                const err = createError(400, `Recipe with id ${recipeId} does not exist.!`)
+                throw err
+            }
+            await recipeModel.updateRecipeById(recipeId,{isDeleted: true} )
+            const actionLogData = {
+                relatedUserId: currentUserId,
+                actionType: "Deleted recipe",
+                actionSubject: `Deleted recipe by ${currentUserName}`,
+                actionContent: JSON.stringify(recipeId),
+            }
+            await actionLogModel.createActionLog(actionLogData)
 
+        }catch(err){
+
+        }
+    },
 }
 
 module.exports = recipeService

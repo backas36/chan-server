@@ -30,6 +30,12 @@ const recipeModel = {
                     if (filed === "categoryName") {
                         return builder.whereILike("inCa.name", value)
                     }
+                    if (filed === "ingredientId") {
+                        return builder.where("cost.ingredientId", value)
+                    }
+                    if (filed === "categoryId") {
+                        return builder.where("inCa.id", value)
+                    }
                     if (filed === "quantity") {
                         return builder.where("cost.quantity", value)
                     }
@@ -48,7 +54,6 @@ const recipeModel = {
         const searchBuilder = (builder) => {
             if (q) {
                 return builder
-                    // .where("cost.quantity","=", q)
                     .whereILike("inCa.name", "%" + q + "%")
                     .orWhereILike("ingredient.sku", "%" + q + "%")
                     .orWhereILike("ingredient.name", "%" + q + "%")
@@ -62,16 +67,15 @@ const recipeModel = {
         let costQuery = db("productIngredient as recipe")
             .select(
                 "recipe.id", "recipe.createdBy",
-                "recipe.ingredientId","recipe.quantity",
+                "recipe.ingredientId","recipe.quantity","recipe.createdAt",
                 db.raw(`json_agg(json_build_object(
                     'purchaseDate', purchase.purchase_date, 'unitPrice', purchase.unit_price
-                )) AS cost_list`)
+                ) ORDER BY  purchase.purchase_date DESC ) AS cost_list`)
             )
             .leftJoin("purchase", "recipe.ingredientId", "purchase.ingredientId")
             .where("recipe.isDeleted", false)
             .andWhere("recipe.productId", productId)
-            .groupBy("recipe.id","recipe.createdBy","recipe.ingredientId","recipe.quantity").as("cost")
-
+            .groupBy("recipe.id","recipe.createdBy","recipe.ingredientId","recipe.quantity","recipe.createdAt").as("cost")
         let query = db(costQuery)
             .select(
                 "cost.id", "cost.createdBy",
@@ -81,7 +85,7 @@ const recipeModel = {
                 "ingredient.sku","ingredient.description",
                 "cost.costList",
                 "user.name as createdByName",
-                "ingredient.createdAt"
+                "cost.createdAt"
                 )
             .leftJoin("ingredient", "cost.ingredientId","ingredient.id")
             .leftJoin("ingredientCategory as inCa", "ingredient.ingredientCategoryId","inCa.id")
@@ -95,7 +99,7 @@ const recipeModel = {
             query = query.orderBy(field, value, "last")
         }
 
-        query = query.orderBy("ingredient.created_at", "desc")
+        query = query.orderBy("cost.created_at", "desc")
 
         const pageQuery = async (startIndex , pageNumber) => {
             if(startIndex === '' || !startIndex){
@@ -116,5 +120,5 @@ const recipeModel = {
     }
 }
 
-// recipeModel.findRecipeByProductId("c0c8beaf-be50-4436-9bde-025f04a6bf39",{})
+// recipeModel.findRecipeByProductId("db44901b-a165-466c-ad44-873981b86ccf",{})
 module.exports = recipeModel
