@@ -1,7 +1,7 @@
 const db = require("../config/db")
 
 const ingredientModel = {
-    findIngredientById: async(ingredientId)=>{
+    findIngredientById: async(ingredientId,lastMonths)=>{
         let latest = db("purchase")
             .select(
                 "purchase.ingredientId", "purchase.unitPrice",
@@ -19,7 +19,7 @@ const ingredientModel = {
                 db.raw(`round(CAST(avg(latest.unit_price) AS numeric),2) as latest_cost`)
             )
             .from(latest)
-            .whereRaw(`latest.row_numbers <= 3`)
+            .whereRaw(`latest.row_numbers <= ${lastMonths || 3}`)
             .groupBy("latest.ingredient_id")
             .as("gl")
 
@@ -54,7 +54,7 @@ const ingredientModel = {
         return id
     },
     findAllIngredient: async(paramsData)=>{
-        const { q, s, n, order, filters } = paramsData
+        const { q, s, n, order, filters,lastMonths } = paramsData
 
         const filterBuilder = (builder) => {
             if (filters) {
@@ -101,7 +101,7 @@ const ingredientModel = {
                 db.raw(`round(CAST(avg(latest.unit_price) AS numeric),2) as latest_cost`)
             )
             .from(latest)
-            .whereRaw(`latest.row_numbers <= 3`)
+            .whereRaw(`latest.row_numbers <=  ${lastMonths || 3}`)
             .groupBy("latest.ingredient_id")
             .as("gl")
         let avgQuery = db

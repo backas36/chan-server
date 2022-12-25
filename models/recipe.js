@@ -20,8 +20,7 @@ const recipeModel = {
         return id
     },
     findRecipeByProductId: async (productId, paramsData) => {
-        const { q, s, n, order, filters } = paramsData
-
+        const { q, s, n, order, filters, lastMonths } = paramsData
         const filterBuilder = (builder) => {
             if (filters) {
                 const makeFilters = filters.split(".")
@@ -40,10 +39,10 @@ const recipeModel = {
                         return builder.where("recipe.quantity", value)
                     }
                     if (filed === "name") {
-                        return builder.whereILike("ingredient.name", value)
+                        return builder.whereILike("in.name", value)
                     }
                     if (filed === "sku") {
-                        return builder.whereILike("ingredient.sku", value)
+                        return builder.whereILike("in.sku", value)
                     }
                     if(filed === 'createdByName'){
                         return builder.whereILike("user.name", value)
@@ -55,9 +54,9 @@ const recipeModel = {
             if (q) {
                 return builder
                     .whereILike("inCa.name", "%" + q + "%")
-                    .orWhereILike("ingredient.sku", "%" + q + "%")
-                    .orWhereILike("ingredient.name", "%" + q + "%")
-                    .orWhereILike("ingredient.description", "%" + q + "%")
+                    .orWhereILike("in.sku", "%" + q + "%")
+                    .orWhereILike("in.name", "%" + q + "%")
+                    .orWhereILike("in.description", "%" + q + "%")
                     .orWhereILike("user.name","%" + q + "%")
 
 
@@ -81,7 +80,7 @@ const recipeModel = {
                 db.raw(`round(CAST(avg(latest.unit_price) AS numeric),2) as latest_cost`)
             )
             .from(latest)
-            .whereRaw(`latest.row_numbers <= 3`)
+            .whereRaw(`latest.row_numbers <= ${lastMonths || 3}`)
             .groupBy("latest.ingredient_id")
             .as("gl")
         let avgQuery = db
@@ -135,12 +134,10 @@ const recipeModel = {
         const totalLength = (await query.clone()).length
         const completedQuery = await pageQuery(s, n)
         const data = await completedQuery(query)
-        console.log(data)
         return {
             totalLength,
             data,
         }
     }
 }
-
 module.exports = recipeModel
