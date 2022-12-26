@@ -34,7 +34,7 @@ const ingredientModel = {
             .as("aq")
 
         const [ingredient] = await db("ingredient as in")
-            .select("in.*",
+            .select("in.*","inCa.id as inCategoryId",
                 "inCa.name as category",
                 "aq.avg_cost", "gl.latest_cost"
                 )
@@ -114,8 +114,10 @@ const ingredientModel = {
             .as("aq")
 
         let query = db("ingredient as in")
-            .select("in.*","inCa.name as category",
-                "aq.avg_cost", "gl.latest_cost")
+            .select("in.*", "inCa.id as inCategoryId",
+                "inCa.name as category",
+                "aq.avg_cost as avg_unit_price", "gl.latest_cost as latest_unit_price",
+            )
             .leftJoin(avgQuery, "in.id", "aq.ingredientId")
             .leftJoin(groupLatest, "in.id", "gl.ingredientId")
             .leftJoin("ingredientCategory as inCa", "in.ingredientCategoryId","inCa.id")
@@ -143,13 +145,13 @@ const ingredientModel = {
 
         const totalLength = (await query.clone()).length
         const completedQuery = await pageQuery(s, n)
-
         const data = await completedQuery(query)
-        console.log(data)
         return {
             totalLength,
             data,
         }
     },
 }
+
+// ingredientModel.findAllIngredient({})
 module.exports = ingredientModel

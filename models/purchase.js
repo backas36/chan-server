@@ -98,7 +98,8 @@ const purchaseModel = {
                 "purchase.id",
                 "purchase.quantity","purchase.purchaseDate",
                 "purchase.ingredientExpDate", "purchase.unitPrice",
-                "purchase.purchasePrice", "purchase.brand",
+                "purchase.purchasePrice",
+                "purchase.brand",
                 "supplier.id as supplierId",
                 "ingredient.id as ingredientId",
                 "ingredientCategory.name as categoryName",
@@ -143,5 +144,6 @@ const purchaseModel = {
         }
     }
 }
+// purchaseModel.findAllPurchase({})
 module.exports = purchaseModel
 

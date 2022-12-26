@@ -32,7 +32,7 @@ const recipeModel = {
                     if (filed === "ingredientId") {
                         return builder.where("recipe.ingredientId", value)
                     }
-                    if (filed === "categoryId") {
+                    if (filed === "inCategoryId") {
                         return builder.where("inCa.id", value)
                     }
                     if (filed === "quantity") {
@@ -94,12 +94,15 @@ const recipeModel = {
 
         let query = db("productIngredient as recipe")
             .select(
-                "recipe.id", "inCa.id as categoryId",  "recipe.ingredientId",
+                "recipe.id", "inCa.id as inCategoryId",  "recipe.ingredientId",
                 "recipe.createdBy","inCa.name as categoryName",
                 "in.name",
               "recipe.quantity",
                 "in.sku",
-                "aq.avg_cost", "gl.latest_cost","in.description",
+                "aq.avg_cost as avgUnitPrice", "gl.latest_cost as latest_unit_price",
+                db.raw(`round(CAST((aq.avg_cost*quantity)AS numeric),2) as avg_cost` ),
+                db.raw(`round(CAST((gl.latest_cost*quantity) AS numeric),2) as latest_cost`),
+                "in.description",
                 "user.name as createdByName",
                 "recipe.createdAt",
 
@@ -140,4 +143,5 @@ const recipeModel = {
         }
     }
 }
+// recipeModel.findRecipeByProductId("c0c8beaf-be50-4436-9bde-025f04a6bf39",{order:"avgCost:desc"})
 module.exports = recipeModel
