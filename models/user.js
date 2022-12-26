@@ -102,7 +102,13 @@ const userModel = {
 
     query = query.orderBy("user.created_at", "desc")
 
-    const pageQuery = async (startIndex = 0, pageNumber = 50) => {
+    const pageQuery = async (startIndex , pageNumber ) => {
+      if(startIndex === '' || !startIndex){
+        startIndex = 0
+      }
+      if(pageNumber === '' || !pageNumber){
+        pageNumber = 15
+      }
       return (query) => query.limit(pageNumber).offset(startIndex)
     }
     const totalLength = (await query.clone()).length

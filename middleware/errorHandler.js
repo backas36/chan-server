@@ -7,9 +7,14 @@ const errorHandler = (err, req, res, next) => {
   let message
 
   if(!err.message || !err?.statusCode  ){
+
     message = "Something went wrong"
   }else {
     message = err.message
+  }
+
+  if(err.message.includes("duplicate")){
+    message = "The data already exist"
   }
 
   const status = err.statusCode ? err.statusCode : 500

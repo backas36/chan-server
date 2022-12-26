@@ -169,7 +169,7 @@ const userService = {
         const err = createError(409, "User with email is already exists.")
         throw err
       }
-      const {id} = await userModel.createUser(userDTO)
+      const {id} = await userModel.createUser(omit(userDTO,["identityType","isNew"]))
 
       const { newAccTokenId, newAccToken } = generateNewAccToken({id,...userDTO})
       await userAuthModel.createUserAuth({
